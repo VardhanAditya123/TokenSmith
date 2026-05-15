@@ -1,5 +1,6 @@
 embed_model: "models/embedders/Qwen3-Embedding-4B-Q5_K_M.gguf"
-embedding_model_context_window: 4096
+embedding_model_context_window: 1024
+
 top_k: 10
 num_candidates: 50
 ensemble_method: "rrf"
@@ -8,17 +9,21 @@ rrf_k: 60
 max_gen_tokens: 800
 chunk_mode: "recursive_sections"
 gen_model: "models/generators/qwen2.5-3b-instruct-q8_0.gguf"
-chunk_size_in_chars: 2000
+chunk_size_in_chars: 1000
 chunk_overlap: 300
 use_hyde: false
 hyde_max_tokens: 300
 use_indexed_chunks: false
-rerank_mode: "cross_encoder"
+rerank_mode: ""
 rerank_top_k: 5
 use_double_prompt: false
 enable_history: true
 max_history_turns: 3
 semantic_cache_enabled: false
-semantic_cache_bi_encoder_threshold: 0.90
+semantic_cache_bi_encoder_threshold: 0.9
 semantic_cache_cross_encoder_threshold: 0.99
 enable_topic_extraction: false
+enable_clustering: true
+n_clusters: 20
+n_probe_clusters: 2
+extracted_index_path: "data/extracted_index.json"

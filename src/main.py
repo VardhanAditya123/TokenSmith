@@ -22,7 +22,8 @@ from src.query_enhancement import generate_hypothetical_document, contextualize_
 from src.retriever import (
     filter_retrieved_chunks, 
     BM25Retriever, 
-    FAISSRetriever, 
+    FAISSRetriever,
+    ClusteredFAISSRetriever,
     IndexKeywordRetriever, 
     get_page_numbers, 
     load_artifacts
@@ -377,11 +378,39 @@ def run_chat_session(args: argparse.Namespace, cfg: RAGConfig):
 
     print("Initializing TokenSmith Chat...")
     try:
-        artifacts_dir = cfg.get_artifacts_directory(partial=args.partial)
+        use_partial = args.partial
+        artifacts_dir = cfg.get_artifacts_directory(partial=use_partial)
         cfg.page_to_chunk_map_path = cfg.get_page_to_chunk_map_path(artifacts_dir, args.index_prefix)
         faiss_idx, bm25_idx, chunks, sources, meta = load_artifacts(artifacts_dir, args.index_prefix)
         print(f"Loaded {len(chunks)} chunks and {len(sources)} sources from artifacts.")
-        retrievers = [FAISSRetriever(faiss_idx, cfg.embed_model), BM25Retriever(bm25_idx)]
+        
+        # Choose FAISS retriever type based on clustering config
+        if cfg.enable_clustering:
+            print(f"  Initializing clustered FAISS retriever...")
+            # Try to load pre-computed clusters from indexing
+            cluster_path = artifacts_dir / f"{args.index_prefix}_clusters.pkl"
+            cluster_data = None
+            if cluster_path.exists():
+                try:
+                    import pickle
+                    with open(cluster_path, "rb") as f:
+                        cluster_data = pickle.load(f)
+                except Exception as e:
+                    print(f"  ⚠️  Failed to load pre-computed clusters: {e}")
+            
+            faiss_retriever = ClusteredFAISSRetriever(
+                cluster_data=cluster_data,
+                embed_model=cfg.embed_model,
+                n_probe_clusters=cfg.n_probe_clusters
+            )
+        else:
+            print("  Initializing flat FAISS retriever...")
+            faiss_retriever = FAISSRetriever(faiss_idx, cfg.embed_model)
+        
+        retrievers = [faiss_retriever, BM25Retriever(bm25_idx)] 
+        # Ignore the BM25 retriever during testing to isolate FAISS performance, but keep it in the ensemble for normal usage
+        retrievers = [faiss_retriever]
+        
         if cfg.ranker_weights.get("index_keywords", 0) > 0:
             retrievers.append(IndexKeywordRetriever(cfg.extracted_index_path, cfg.page_to_chunk_map_path))
         

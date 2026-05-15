@@ -4,6 +4,7 @@ index_builder.py
 PDF -> markdown text -> chunks -> embeddings -> BM25 + FAISS + metadata
 """
 
+from collections import defaultdict
 import os
 import pickle
 import pathlib
@@ -111,6 +112,14 @@ def build_index(
 
             if c["heading"] == "Introduction":
                 continue
+            
+            # Skip empty chunks and corrupted chunks (only dashes, only whitespace, etc.)
+            if not clean_chunk:
+                continue
+            
+            # Skip chunks that are only punctuation/dashes (table artifacts)
+            if all(c in '-|: \n\t' for c in clean_chunk):
+                continue
 
             meta = {
                 "filename": markdown_file,
@@ -169,7 +178,20 @@ def build_index(
             all_chunks,
             show_progress_bar=True,
         )
+        
+     # Step 3.5: Build clustering (if enough chunks)
+    dim = embeddings.shape[1]
+    if len(all_chunks) >= 1:
+        print(f"🔨 Building cluster index for {len(all_chunks):,} chunks...")
+        cluster_data = build_cluster_index(embeddings, all_chunks, dim)
+        cluster_path = artifacts_dir / f"{index_prefix}_clusters.pkl"
+        with open(cluster_path, "wb") as f:
+            pickle.dump(cluster_data, f)
+        print(f"✓ Cluster index saved: {index_prefix}_clusters.pkl")
+    else:
+        print(f"⚠️  Skipping clustering: {len(all_chunks)} chunks < 100 minimum")
 
+    
     # Step 3: Build FAISS index
     print(f"Building FAISS index for {len(all_chunks):,} chunks...")
     dim = embeddings.shape[1]
@@ -216,3 +238,63 @@ def preprocess_for_bm25(text: str) -> list[str]:
     text = text.lower()
     text = re.sub(r"[^a-z0-9_'#+-]", " ", text)
     return text.split()
+
+
+def build_cluster_index(embeddings: np.ndarray, chunks: List[str], embedding_dim: int, n_clusters: int = 100) -> dict:
+    """
+    Build k-means clusters for fast retrieval.
+    
+    Args:
+        embeddings: (n_chunks, embedding_dim) array of chunk embeddings
+        chunks: List of chunk texts
+        embedding_dim: Dimensionality of embeddings
+        n_clusters: Number of clusters (default 100, ~sqrt(n_chunks))
+    
+    Returns:
+        Dictionary with cluster metadata to be pickled
+    """
+        
+    n_chunks = len(chunks)
+    actual_clusters = max(5, min(n_clusters, n_chunks // 10))
+    print(f"  Computing k-means with {actual_clusters} clusters...")
+    
+    # Run k-means clustering
+    kmeans = faiss.Kmeans(
+        d=embedding_dim,
+        k=actual_clusters,
+        niter=20,
+        verbose=False,
+        seed=42
+    )
+    kmeans.train(embeddings.astype(np.float32))
+    D, I = kmeans.index.search(embeddings.astype(np.float32), 1)  # Get cluster assignments
+    cluster_ids = I.reshape(-1)
+    # Build cluster -> chunk indices map
+    cluster_to_chunks = defaultdict(list)
+    for idx, cluster_id in enumerate(cluster_ids):
+        cluster_to_chunks[cluster_id].append(idx)
+    print(f"  Built cluster to chunk mapping for {len(cluster_to_chunks)} clusters")
+    
+    # Build per-cluster FAISS indices
+    cluster_indices = {}
+    cluster_chunks = {}
+    for cluster_id, chunk_indices in cluster_to_chunks.items():
+        cluster_embeddings = embeddings[chunk_indices].astype(np.float32)
+        cluster_index = faiss.IndexFlatL2(embedding_dim)
+        cluster_index.add(cluster_embeddings)
+        cluster_indices[int(cluster_id)] = cluster_index
+        # cluster_chunks[int(cluster_id)] = [
+        #     (int(idx), chunks[int(idx)]) for idx in chunk_indices
+        # ]
+        cluster_chunks[int(cluster_id)] = [
+            int(idx) for idx in chunk_indices
+        ]
+    print(f"  ✓ Created {len(cluster_indices)} clusters")
+    return {
+        "n_clusters": len(cluster_indices),
+        "embedding_dim": embedding_dim,
+        "cluster_indices": cluster_indices,
+        "cluster_chunks": cluster_chunks,
+        "chunk_assignments": cluster_ids,
+        "centroids": kmeans.centroids.tolist()
+    }   

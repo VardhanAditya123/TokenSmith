@@ -29,6 +29,11 @@ class RAGConfig:
     )
     rerank_mode: str = ""
     rerank_top_k: int = 5
+    
+    # clustering for fast retrieval
+    enable_clustering: bool = False
+    n_clusters: int = 100
+    n_probe_clusters: int = 5
 
     # generation
     max_gen_tokens: int = 400
