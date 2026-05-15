@@ -13,6 +13,7 @@ def generate_hypothetical_document(
     query: str,
     model_path: str,
     max_tokens: int = 100,
+    temperature: float = 0.3,
     **llm_kwargs
 ) -> str:
     """
@@ -40,14 +41,21 @@ def generate_hypothetical_document(
         """)
     
     prompt = text_cleaning(prompt)
-    hypothetical = run_llama_cpp(
+    response = run_llama_cpp(
         prompt,
         model_path,
         max_tokens=max_tokens,
+        temperature=temperature,
         **llm_kwargs
     )
     
-    return hypothetical.strip()
+    # Extract text from response dict
+    if isinstance(response, dict):
+        text = response["choices"][0]["text"]
+    else:
+        text = response
+    
+    return text.strip()
 
 def correct_query_grammar(
     query: str,

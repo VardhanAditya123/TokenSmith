@@ -3,6 +3,8 @@ import hashlib
 import multiprocessing
 import multiprocessing.pool
 import numpy as np
+import os
+import platform
 from pathlib import Path
 from typing import List, Union, Optional
 from llama_cpp import Llama
@@ -13,9 +15,46 @@ _worker_model: Optional[Llama] = None
 _worker_embedding_dim: int = 0
 
 
-def _init_worker(model_path: str, n_ctx: int, n_threads: int):
+def _get_gpu_layers(use_gpu: bool = True) -> int:
+    """
+    Centralized GPU layer detection for both main and worker processes.
+    
+    Detects Apple Silicon (M1/M2/M3) and returns the number of GPU layers
+    to use. This eliminates code duplication between _init_worker() and
+    SentenceTransformer.__init__().
+    
+    Args:
+        use_gpu: Whether to attempt GPU acceleration (default: True)
+        
+    Returns:
+        Number of GPU layers (0 = CPU-only, >0 = GPU accelerated)
+        
+    Environment Variables:
+        TOKENSMITH_GPU_LAYERS: Override default GPU layers (default: 35 on Apple Silicon)
+    """
+    system = platform.system()
+    machine = platform.machine()
+    is_apple_silicon = system == "Darwin" and machine == "arm64"
+    
+    # Return early if GPU not requested or not available
+    if not use_gpu or not is_apple_silicon:
+        return 0
+    
+    # For Apple Silicon, offload ALL layers to GPU by default (use -1 for all layers)
+    # Users can override with TOKENSMITH_GPU_LAYERS environment variable
+    default_layers = -1  # -1 means offload ALL layers to GPU
+    n_layers = int(os.environ.get("TOKENSMITH_GPU_LAYERS", str(default_layers)))
+    print(f"[GPU Mode] Using {n_layers} GPU layers on {machine}")
+    n_layers = 1
+    return n_layers
+
+
+def _init_worker(model_path: str, n_ctx: int, n_threads: int, use_gpu: bool = True):
     """Initializes the model inside a worker process."""
     global _worker_model, _worker_embedding_dim
+
+    # Use centralized GPU detection function
+    n_gpu_layers = _get_gpu_layers(use_gpu)
 
     _worker_model = Llama(
         model_path=model_path,
@@ -24,6 +63,7 @@ def _init_worker(model_path: str, n_ctx: int, n_threads: int):
         embedding=True,
         verbose=False,
         use_mmap=True,
+        n_gpu_layers=n_gpu_layers,
     )
 
     test_emb = _worker_model.create_embedding("test")['data'][0]['embedding']
@@ -48,7 +88,7 @@ def _encode_batch_worker(texts: List[str]) -> List[List[float]]:
 
 
 class SentenceTransformer:
-    def __init__(self, model_path: str, n_ctx: int = 4096, n_threads: int = None):
+    def __init__(self, model_path: str, n_ctx: int = 4096, n_threads: int = None, use_gpu: bool = True):
         """
         Initialize with a local GGUF model file path.
 
@@ -56,9 +96,22 @@ class SentenceTransformer:
             model_path: Path to your local .gguf file
             n_ctx:      Context window size. Defaults to 4096.
             n_threads:  Number of threads (None = auto-detect)
+            use_gpu:    Whether to use GPU acceleration on Mac M1 (default True)
         """
         self.model_path = model_path
         self.n_ctx = n_ctx
+
+        # Use centralized GPU detection function
+        n_gpu_layers = _get_gpu_layers(use_gpu)
+        
+        # Log CPU/GPU mode
+        if n_gpu_layers > 0:
+            print(f"[GPU Mode] Running embedder on Mac M1/M2/M3 GPU (Metal Performance Shaders)")
+            print(f"[GPU Mode] GPU layers: {n_gpu_layers} (set TOKENSMITH_GPU_LAYERS env var to adjust)")
+        else:
+            system = platform.system()
+            machine = platform.machine()
+            print(f"[CPU Mode] Running embedder on CPU only (system: {system} {machine})")
 
         self.model = Llama(
             model_path=model_path,
@@ -67,7 +120,7 @@ class SentenceTransformer:
             embedding=True,
             verbose=False,
             use_mmap=True,
-            n_gpu_layers=-1,
+            n_gpu_layers=n_gpu_layers,
         )
         self._embedding_dimension = None
 
@@ -141,8 +194,14 @@ class SentenceTransformer:
 
     def start_multi_process_pool(self, num_workers: int = None) -> multiprocessing.pool.Pool:
         """Starts a pool of worker processes."""
-        workers = num_workers if num_workers else max(1, multiprocessing.cpu_count() - 2)
-        print(f"Creating {workers} worker processes...")
+        # Disable multiprocessing on Apple Silicon due to GPU memory constraints
+        is_apple_silicon = platform.system() == "Darwin"
+        if is_apple_silicon:
+            workers = 1
+            print("[Apple Silicon] Using sequential encoding (multiprocessing disabled to prevent GPU memory exhaustion)")
+        else:
+            workers = num_workers if num_workers else max(1, multiprocessing.cpu_count() - 2)
+            print(f"Creating {workers} worker processes...")
 
         pool = multiprocessing.Pool(
             processes=workers,

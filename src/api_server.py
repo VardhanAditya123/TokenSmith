@@ -404,7 +404,7 @@ async def chat_stream(request: ChatRequest):
     disable_chunks = not enable_chunks
     prompt_type = request.prompt_type if request.prompt_type is not None else _config.system_prompt_mode
     max_chunks = request.top_k if request.top_k is not None else (request.max_chunks if request.max_chunks is not None else _config.top_k)
-    temperature = request.temperature if request.temperature is not None else 0.7
+    temperature = request.temperature if request.temperature is not None else 0.2  # Lower default to reduce hallucination
     
     chunks = _artifacts["chunks"]
     sources = _artifacts["sources"]
@@ -524,7 +524,7 @@ async def chat(request: ChatRequest):
             else _config.top_k
         )
     )
-    temperature = request.temperature if request.temperature is not None else 0.7
+    temperature = request.temperature if request.temperature is not None else 0.2  # Lower default to reduce hallucination
 
     chunks = _artifacts["chunks"]
     sources = _artifacts["sources"]
