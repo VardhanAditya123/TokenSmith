@@ -10,6 +10,7 @@ from __future__ import annotations
 import pathlib
 import os
 import pickle
+import time
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional, Dict, Any
 import nltk
@@ -100,6 +101,8 @@ class FAISSRetriever(Retriever):
         """
         Returns FAISS scores for top 'pool_size' keyed by global chunk index.
         """
+        start_time = time.time()
+        
         # FAISS expects a 2D array
         q_vec = self.embedder.encode([query]).astype("float32")
         
@@ -110,7 +113,9 @@ class FAISSRetriever(Retriever):
             )
 
         # Perform the search
+        search_start = time.time()
         distances, indices =  self.index.search(q_vec, pool_size)
+        search_time = time.time() - search_start
 
         # Remove invalid indices and ensure they are within bounds
         cand_idxs = [i for i in indices[0] if 0 <= i < len(chunks)]
@@ -119,10 +124,14 @@ class FAISSRetriever(Retriever):
         dists = {idx: float(dist) for idx, dist in zip(cand_idxs, distances[0][:len(cand_idxs)])}
 
         # Invert distance to score: 1 / (1 + distance). Adding 1 avoids division by zero.
-        return {
+        result = {
             idx: 1.0 / (1.0 + dist)
             for idx, dist in dists.items()
         }
+        
+        elapsed = time.time() - start_time
+        print(f"[FAISSRetriever] Total time: {elapsed*1000:.2f}ms (search: {search_time*1000:.2f}ms, candidates: {len(result)})")
+        return result
 
 
 class BM25Retriever(Retriever):
@@ -138,6 +147,8 @@ class BM25Retriever(Retriever):
         """
         Returns BM25 scores for top 'pool_size' keyed by global chunk index.
         """
+        start_time = time.time()
+        
         # Tokenize the query in the same way the index was built
         tokenized_query = preprocess_for_bm25(query)
 
@@ -156,6 +167,9 @@ class BM25Retriever(Retriever):
 
         # Format the output as a dictionary of scores
         scores = {int(idx): float(score) for idx, score in zip(top_k_indices, top_scores)}
+        
+        elapsed = time.time() - start_time
+        print(f"[BM25Retriever] Total time: {elapsed*1000:.2f}ms (candidates: {len(scores)})")
 
         return scores
 
@@ -340,33 +354,43 @@ class ClusteredFAISSRetriever(Retriever):
         Searches the top n_probe_clusters nearest clusters.
         Returns dict with chunk_idx -> score, plus stores cluster metadata for logging.
         """
+        start_time = time.time()
+        
         if self.cluster_indices is None or self.cluster_chunks is None:
             raise ValueError("Cluster data not loaded. Ensure index was built with clustering and cluster data is provided.")
+        
         # Step 1: Embed the query
+        embed_start = time.time()
         q_vec = self.embedder.encode([query]).astype("float32")
+        embed_time = time.time() - embed_start
         
         # Step 2: Find nearest cluster(s) using centroids
+        centroid_start = time.time()
         # Compute distances to centroids
         dists_to_centroids = self.centroids @ q_vec.T  # (n_clusters, 1)
         dists_to_centroids = np.squeeze(dists_to_centroids)  # (n_clusters,)
         
         # Get top n_probe_clusters nearest clusters
         top_cluster_indices = np.argsort(-dists_to_centroids)[:self.n_probe_clusters]
+        centroid_time = time.time() - centroid_start
+        
         print(f"[ClusteredFAISSRetriever] Querying '{query[:50]}...'")
-        print(f"[ClusteredFAISSRetriever] Cluster distances: {dict(enumerate(dists_to_centroids))}")
         print(f"[ClusteredFAISSRetriever] Top {self.n_probe_clusters} clusters to search: {top_cluster_indices}")
         
         scores = {}
         self.chunk_cluster_map = {}  # Track which cluster each chunk came from
+        search_time = 0
+        
         for cluster_idx in top_cluster_indices:
             nearest_cluster_chunks = self.cluster_chunks.get(int(cluster_idx), [])
-            print(f"[ClusteredFAISSRetriever] Cluster {cluster_idx}: {len(nearest_cluster_chunks)} chunks - indices: {nearest_cluster_chunks}")
             if not nearest_cluster_chunks:
                 continue   # No chunks in this cluster, skip
             
             # Step 3: Use FAISS to search only within this cluster's chunks
+            cluster_search_start = time.time()
             clusterIndex = self.cluster_indices[cluster_idx]
             distances, indices = clusterIndex.search(q_vec, min(pool_size, len(nearest_cluster_chunks)))
+            search_time += time.time() - cluster_search_start
             
             # Map local cluster indices back to global chunk indices
             for local_idx, dist in zip(indices[0], distances[0]):
@@ -376,13 +400,8 @@ class ClusteredFAISSRetriever(Retriever):
                         score = 1.0 / (1.0 + dist)  # Normalize to match FAISSRetriever (0-1 range)
                         scores[global_chunk_idx] = score
                         self.chunk_cluster_map[global_chunk_idx] = int(cluster_idx)  # Tag chunk with cluster
-                        
-                        
-                        # Show first few chunks from each cluster
-                        # if local_idx < 2:
-                        #     chunk_preview = chunks[global_chunk_idx][:100].replace('\n', ' ')
-                        #     print(f"  [Cluster {cluster_idx}, Local {local_idx}] Global idx={global_chunk_idx}, score={score:.4f}, preview: {chunk_preview}...")
         
+        elapsed = time.time() - start_time
         print(f"[ClusteredFAISSRetriever] Retrieved {len(scores)} unique chunks from {len(top_cluster_indices)} clusters")
-        print(f"[ClusteredFAISSRetriever] Chunk indices retrieved: {sorted(scores.keys())}")
+        print(f"[ClusteredFAISSRetriever] Total time: {elapsed*1000:.2f}ms (embed: {embed_time*1000:.2f}ms, centroid: {centroid_time*1000:.2f}ms, search: {search_time*1000:.2f}ms)\"")
         return scores
