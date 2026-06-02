@@ -31,7 +31,7 @@ class RAGConfig:
     rerank_top_k: int = 5
     
     # clustering for fast retrieval
-    enable_clustering: bool = False
+    enable_clustering: bool = True
     n_clusters: int = 100
     n_probe_clusters: int = 5
 

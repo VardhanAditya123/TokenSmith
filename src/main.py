@@ -77,8 +77,18 @@ def run_index_mode(args: argparse.Namespace, cfg: RAGConfig):
         print("ERROR: No markdown files found in data/.", file=sys.stderr)
         sys.exit(1)
 
+    # If chapters are specified, try to use the full textbook file if available
+    markdown_to_use = str(md_files[0])
+    if args.chapters:
+        full_textbook = data_dir / "textbook--extracted_markdown.md"
+        if full_textbook.exists():
+            print(f"Using full textbook for chapter-specific indexing: {full_textbook}")
+            markdown_to_use = str(full_textbook)
+        else:
+            print(f"Warning: Full textbook not found, using first chapter file instead")
+
     build_index(
-        markdown_file=str(md_files[0]),
+        markdown_file=markdown_to_use,
         chunker=chunker,
         chunk_config=cfg.chunk_config,
         embedding_model_path=cfg.embed_model,
@@ -253,7 +263,7 @@ def get_answer(
                     "index_score": index_scores.get(idx, 0),
                     "index_rank": index_ranks.get(idx, 0),
                 })
-
+        
         # Step 3: Final re-ranking
         ranked_chunks = rerank(question, ranked_chunks, mode=cfg.rerank_mode, top_n=cfg.rerank_top_k)
         # print("Reranked Chunks", type(ranked_chunks), len(ranked_chunks), type(ranked_chunks[0]) if ranked_chunks else "No chunks")
@@ -378,8 +388,7 @@ def run_chat_session(args: argparse.Namespace, cfg: RAGConfig):
 
     print("Initializing TokenSmith Chat...")
     try:
-        use_partial = args.partial
-        artifacts_dir = cfg.get_artifacts_directory(partial=use_partial)
+        artifacts_dir = cfg.get_artifacts_directory(partial=args.partial)
         cfg.page_to_chunk_map_path = cfg.get_page_to_chunk_map_path(artifacts_dir, args.index_prefix)
         faiss_idx, bm25_idx, chunks, sources, meta = load_artifacts(artifacts_dir, args.index_prefix)
         print(f"Loaded {len(chunks)} chunks and {len(sources)} sources from artifacts.")
@@ -407,10 +416,7 @@ def run_chat_session(args: argparse.Namespace, cfg: RAGConfig):
             print("  Initializing flat FAISS retriever...")
             faiss_retriever = FAISSRetriever(faiss_idx, cfg.embed_model)
         
-        retrievers = [faiss_retriever, BM25Retriever(bm25_idx)] 
-        # Ignore the BM25 retriever during testing to isolate FAISS performance, but keep it in the ensemble for normal usage
-        retrievers = [faiss_retriever]
-        
+        retrievers = [faiss_retriever, BM25Retriever(bm25_idx)]
         if cfg.ranker_weights.get("index_keywords", 0) > 0:
             retrievers.append(IndexKeywordRetriever(cfg.extracted_index_path, cfg.page_to_chunk_map_path))
         
