@@ -162,14 +162,15 @@ def build_index(
     )
     print(f"Embedding {len(all_chunks):,} chunks sequentially...")
 
+    # use_multiprocessing = True
     if use_multiprocessing:
         print("Starting multi-process pool for embeddings...")
-        pool = embedder.start_multi_process_pool(workers=4)
+        pool = embedder.start_multi_process_pool(num_workers=8)
         try:
             embeddings = embedder.encode_multi_process(
                 all_chunks,
                 pool,
-                batch_size=4,
+                batch_size=16,
             )
         finally:
             embedder.stop_multi_process_pool(pool)

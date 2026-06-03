@@ -39,10 +39,38 @@ from src.main import get_answer
 from src.ranking.ranker import EnsembleRanker
 from src.retriever import (
     BM25Retriever,
+    ClusteredFAISSRetriever,
     FAISSRetriever,
     IndexKeywordRetriever,
     load_artifacts,
+    load_full_artifacts,
 )
+from src.embedder import SentenceTransformer
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Helpers
+# ─────────────────────────────────────────────────────────────────────────────
+
+def convert_numpy_types(obj: Any) -> Any:
+    """
+    Recursively convert numpy types (float32, int64, etc.) to native Python types
+    for JSON serialization. Handles dicts, lists, and scalars.
+    """
+    import numpy as np
+    
+    if isinstance(obj, dict):
+        return {k: convert_numpy_types(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(item) for item in obj]
+    elif isinstance(obj, (np.floating, np.integer)):
+        # Convert numpy scalars to native Python types
+        return obj.item()
+    elif isinstance(obj, np.ndarray):
+        # Convert numpy arrays to lists
+        return obj.tolist()
+    else:
+        return obj
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -70,20 +98,26 @@ INVALID_AB_PARAMS = frozenset({
 # Artifact loading
 # ─────────────────────────────────────────────────────────────────────────────
 
-def load_tokensmith_artifacts(cfg: RAGConfig, index_prefix: str = "textbook_index") -> Dict:
+def load_tokensmith_artifacts(cfg: RAGConfig, index_prefix: str = "textbook_index", partial: bool = False) -> Dict:
     """
     Load FAISS, BM25, chunks, sources, and metadata from the artifacts directory.
     Returns the artifacts dict expected by get_answer().
     Raises RuntimeError if loading fails (run index mode first).
     """
     try:
-        artifacts_dir = cfg.get_artifacts_directory()
-        faiss_idx, bm25_idx, chunks, sources, meta = load_artifacts(
+        print("THE partal flagu is: ", partial)
+        artifacts_dir = cfg.get_artifacts_directory(partial=partial)
+        faiss_idx, bm25_idx, chunks, sources, meta, cluster_data = load_full_artifacts(
             artifacts_dir, index_prefix
         )
+        print("Len of chunsks: ", len(chunks))
+        faiss_retriever = ClusteredFAISSRetriever(
+                cluster_data=cluster_data,
+                embed_model=cfg.embed_model,
+                n_probe_clusters=cfg.n_probe_clusters
+        )
         retrievers = [
-            FAISSRetriever(faiss_idx, cfg.embed_model),
-            BM25Retriever(bm25_idx),
+            faiss_retriever
         ]
         if cfg.ranker_weights.get("index_keywords", 0) > 0:
             retrievers.append(
@@ -295,7 +329,9 @@ def run_benchmark(
                 print(f"         ERROR: {error[:120]}")
 
             results.append(result)
-            f.write(json.dumps(result, ensure_ascii=False) + "\n")
+            # Convert numpy types to native Python types for JSON serialization
+            result_serializable = convert_numpy_types(result)
+            f.write(json.dumps(result_serializable, ensure_ascii=False) + "\n")
 
     print(f"\n[BENCHMARK] Done. {len(results)} results written to {output_jsonl}")
     return results

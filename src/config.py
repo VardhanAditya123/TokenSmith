@@ -20,7 +20,8 @@ class RAGConfig:
     # retrieval + ranking
     top_k: int = 10
     num_candidates: int = 60
-    embed_model: str = "models/embedders/Qwen3-Embedding-4B-Q5_K_M.gguf"
+    # embed_model: str = "models/embedders/Qwen3-Embedding-4B-Q5_K_M.gguf"
+    embed_model: str = "models/embedders/mxbai-embed-large-v1.Q4_K_M.gguf"
     embedding_model_context_window: int = 4096
     ensemble_method: str = "rrf"
     rrf_k: int = 60
@@ -32,8 +33,8 @@ class RAGConfig:
     
     # clustering for fast retrieval
     enable_clustering: bool = True
-    n_clusters: int = 100
-    n_probe_clusters: int = 5
+    n_clusters: int = 20
+    n_probe_clusters: int = 4
 
     # generation
     max_gen_tokens: int = 400

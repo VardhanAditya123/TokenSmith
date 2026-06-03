@@ -1,0 +1,11 @@
+{
+  "textbooks": [
+    {
+      "markdown_file": "data/08 Chapter 1 Introduction --extracted_markdown.md",
+      "chapters": [
+        "all"
+      ],
+      "status": "full"
+    }
+  ]
+}

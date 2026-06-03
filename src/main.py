@@ -406,7 +406,7 @@ def run_chat_session(args: argparse.Namespace, cfg: RAGConfig):
                         cluster_data = pickle.load(f)
                 except Exception as e:
                     print(f"  ⚠️  Failed to load pre-computed clusters: {e}")
-            
+            print(f"Loading TokenSmith artifacts from: cluster_path={cluster_path}")
             faiss_retriever = ClusteredFAISSRetriever(
                 cluster_data=cluster_data,
                 embed_model=cfg.embed_model,
@@ -416,7 +416,7 @@ def run_chat_session(args: argparse.Namespace, cfg: RAGConfig):
             print("  Initializing flat FAISS retriever...")
             faiss_retriever = FAISSRetriever(faiss_idx, cfg.embed_model)
         
-        retrievers = [faiss_retriever, BM25Retriever(bm25_idx)]
+        retrievers = [faiss_retriever]
         if cfg.ranker_weights.get("index_keywords", 0) > 0:
             retrievers.append(IndexKeywordRetriever(cfg.extracted_index_path, cfg.page_to_chunk_map_path))
         

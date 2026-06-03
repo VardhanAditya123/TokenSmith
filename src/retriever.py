@@ -22,6 +22,8 @@ from src.embedder import CachedEmbedder
 
 from src.config import RAGConfig
 from src.index_builder import preprocess_for_bm25
+from src.embedder import SentenceTransformer
+
 
 
 # -------------------------- Embedder cache ------------------------------
@@ -52,6 +54,23 @@ def load_artifacts(artifacts_dir: os.PathLike, index_prefix: str) -> Tuple[faiss
     metadata = pickle.load(open(artifacts_dir / f"{index_prefix}_meta.pkl", "rb"))
 
     return faiss_index, bm25_index, chunks, sources, metadata
+
+def load_full_artifacts(artifacts_dir: os.PathLike, index_prefix: str) -> Tuple[faiss.Index, List[str], List[str], Any]:
+    """
+    Loads:
+      - FAISS index: {index_prefix}.faiss
+      - chunks:      {index_prefix}_chunks.pkl
+      - sources:     {index_prefix}_sources.pkl
+    """
+    artifacts_dir = pathlib.Path(artifacts_dir)
+    faiss_index = faiss.read_index(str(artifacts_dir / f"{index_prefix}.faiss"))
+    bm25_index  = pickle.load(open(artifacts_dir / f"{index_prefix}_bm25.pkl", "rb"))
+    chunks      = pickle.load(open(artifacts_dir / f"{index_prefix}_chunks.pkl", "rb"))
+    sources     = pickle.load(open(artifacts_dir / f"{index_prefix}_sources.pkl", "rb"))
+    metadata = pickle.load(open(artifacts_dir / f"{index_prefix}_meta.pkl", "rb"))
+    cluster_data = pickle.load(open(artifacts_dir / f"{index_prefix}_clusters.pkl", "rb"))
+    print(f"Loaded cluster data with  with path {artifacts_dir / f'{index_prefix}_clusters.pkl'}")
+    return faiss_index, bm25_index, chunks, sources, metadata, cluster_data
 
 
 # -------------------------- Helper to get page nums for chunks -------------------------------
@@ -333,7 +352,16 @@ class ClusteredFAISSRetriever(Retriever):
         self.chunk_assignments = None
         self.n_probe_clusters = n_probe_clusters
         if cluster_data:
+            print(f"[ClusteredFAISSRetriever] Loading cluster data with {len(cluster_data.get('cluster_indices', {}))} clusters")
             self._load_clusters(cluster_data)
+        
+        #print cluster details for debugging
+        if self.cluster_indices and self.cluster_chunks:
+            print(f"[ClusteredFAISSRetriever] Initialized with {len(self.cluster_indices)} clusters")
+            cluster_sizes = [len(chunks) for chunks in self.cluster_chunks.values()]
+            print(f"[ClusteredFAISSRetriever] Cluster size stats: min={min(cluster_sizes)}, max={max(cluster_sizes)}, avg={sum(cluster_sizes)/len(cluster_sizes):.2f}")
+        else:
+            print(f"[ClusteredFAISSRetriever] No cluster data loaded, will not function properly")
         
        
     
@@ -362,6 +390,10 @@ class ClusteredFAISSRetriever(Retriever):
         # Step 1: Embed the query
         embed_start = time.time()
         q_vec = self.embedder.encode([query]).astype("float32")
+        # print(f"[ClusteredFAISSRetriever] Embeddeder is {self.embedder.model_path}")
+        # print(f"[ClusteredFAISSRetriever] Query embedding shape: {q_vec.shape}, dtype: {q_vec.dtype}, ")
+        # print(f"[ClusteredFAISSRetriever] Query = '{query}...'")
+        # print(f"[ClusteredFAISSRetriever] Query  vector= '{q_vec[0][:50]}...'")
         embed_time = time.time() - embed_start
         
         # Step 2: Find nearest cluster(s) using centroids
@@ -391,11 +423,11 @@ class ClusteredFAISSRetriever(Retriever):
             clusterIndex = self.cluster_indices[cluster_idx]
             distances, indices = clusterIndex.search(q_vec, min(pool_size, len(nearest_cluster_chunks)))
             search_time += time.time() - cluster_search_start
-            
             # Map local cluster indices back to global chunk indices
             for local_idx, dist in zip(indices[0], distances[0]):
                 if local_idx < len(nearest_cluster_chunks):
                     global_chunk_idx = nearest_cluster_chunks[local_idx]
+                    # print(f"[ClusteredFAISSRetriever] Cluster {cluster_idx} local idx {local_idx} maps to global chunk idx {global_chunk_idx} with distance {dist}")
                     if 0 <= global_chunk_idx < len(chunks):
                         score = 1.0 / (1.0 + dist)  # Normalize to match FAISSRetriever (0-1 range)
                         scores[global_chunk_idx] = score

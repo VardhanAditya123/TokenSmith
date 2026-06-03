@@ -337,13 +337,14 @@ def cmd_run(args: argparse.Namespace) -> None:
     print(f"  QAC count   : {len(qacs)}")
     print(f"  Config      : {args.config}")
     print(f"  Output      : {out_dir}")
+    print(f"  Index       : {'partial' if args.partial else 'full'}")
     print(f"  Judge       : {'disabled (--no_judge)' if args.no_judge else 'enabled'}")
 
     if args.dry_run:
         print(f"\n[DRY RUN] No evaluation performed.")
         return
 
-    artifacts = load_tokensmith_artifacts(cfg, INDEX_PREFIX)
+    artifacts = load_tokensmith_artifacts(cfg, INDEX_PREFIX, partial=args.partial)
     print(f"  Artifacts loaded successfully")
 
     per_qac, results, judgements, full_metrics, examples = evaluate_one_config(
@@ -418,6 +419,7 @@ def cmd_ab_test(args: argparse.Namespace) -> None:
     print(f"{'='*60}")
     print(f"  Label       : {label}")
     print(f"  QAC count   : {len(qacs)}")
+    print(f"  Index       : {'partial' if args.partial else 'full'}")
     print(f"  Parameters  : {list(grid.keys())}")
     print(f"  Combinations: {len(combos)}")
     for combo in combos:
@@ -437,7 +439,7 @@ def cmd_ab_test(args: argparse.Namespace) -> None:
         return
 
     # Load artifacts once — shared across all combinations
-    artifacts = load_tokensmith_artifacts(base_cfg, INDEX_PREFIX)
+    artifacts = load_tokensmith_artifacts(base_cfg, INDEX_PREFIX, partial=args.partial)
     print(f"  Artifacts loaded successfully\n")
 
     combination_results: List[Dict] = []
@@ -593,6 +595,14 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["individual", "all"],
         default="all",
         help="How to evaluate rubric satisfaction: one criterion at a time (individual) or all together (all). Default: all",
+    )
+    shared.add_argument(
+        "--partial", action="store_true",
+        help="Use partial index (e.g., single chapter) instead of full index",
+    )
+    shared.add_argument(
+        "--index_prefix", default="textbook_index",
+        help="Prefix for FAISS index files (default: textbook_index)",
     )
 
     # ── run ───────────────────────────────────────────────────────────────────
