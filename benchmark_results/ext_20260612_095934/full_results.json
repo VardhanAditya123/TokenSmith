@@ -1,0 +1,600 @@
+[
+  {
+    "id": "2.10",
+    "benchmark_item": {
+      "id": "2.10",
+      "question": "Describe the differences in meaning between the terms relation and relation schema.",
+      "answer": "relation is a set of tuples. relation schema is used to refer to the the structure of a relation. A relation schema consists of a list of attributes and their corresponding domains.",
+      "must_rubric": [
+        "Define 'relation' as a set or collection of tuples.",
+        "Define 'relation schema' as the structural definition (list of attributes) and their domains."
+      ],
+      "optional_rubric": [
+        "Distinguish between the static nature of a schema and the dynamic nature of a relation instance."
+      ]
+    },
+    "ts_answer": "The terms \"relation\" and \"relation schema\" are closely related but have distinct meanings in the context of relational databases.\n\n1. **Relation**: A relation is a collection of tuples, where each tuple represents a single instance of a set of attributes. In other words, a relation is a concrete set of data that exists at a particular point in time. For example, the relation \"instructor\" might contain all the current instructors and their details at a given moment.\n\n2. **Relation Schema**: A relation schema, on the other hand, is a description of the structure of a relation. It specifies the attributes (columns) and their domains (possible values for each attribute) that the relation can have. The schema does not contain any data; it is a blueprint or a template that defines what the relation can contain. For example, the schema for the \"instructor\" relation might be: instructor ( ID , name , dept name , tot cred ), which defines the attributes and their domains.\n\nTo summarize, a relation is an instance of a relation schema. The schema describes the structure and constraints of the relation, while the relation is a concrete instance of that structure at a specific moment in time. The schema remains constant, but the relation can change over time as new data is added or existing data is modified.\n\nFor example, if we have a relation \"instructor\" with the schema instructor ( ID , name , dept name , tot cred ), the relation might initially contain the following data:\n- (1, \"John Doe\", \"Computer Science\", 12)\n- (2, \"Jane Smith\", \"Mathematics\", 10)\n\nLater, if we add a new instructor:\n- (3, \"Alice Johnson\", \"Physics\", 15)\n\nThe schema remains the same, but the relation instance changes to include the new tuple.\n\nIn summary, the relation schema is the blueprint, and the relation is the concrete instance that follows that blueprint.\n",
+    "retrieved_chunks": [
+      {
+        "rank": 1,
+        "chunk_id": 62,
+        "content": "When we talk about a database, we must differentiate between the database schema , which is the logical design of the database, and the database instance , which is a snapshot of the data in the database at a given instant in time. The concept of a relation corresponds to the programming-language notion of a variable, while the concept of a relation schema corresponds to the programminglanguage notion of type definition. In general, a relation schema consists of a list of attributes and their corresponding domains. We shall not be concerned about the precise definition of the domain of each attribute until we discuss the SQL language in Chapter 3. The concept of a relation instance corresponds to the programming-language notion of a value of a variable. The value of a given variable may change with time; similarly the contents of a relation instance may change with time as the relation is updated. In contrast, the schema of a relation does not generally change. Although it is important to know the difference between a relation schema and a relation instance, we often use the same name, such as instructor , to refer to both the schema and the instance. Where required, we explicitly refer to the schema or to the instance, for example 'the instructor schema,' or 'an instance of the instructor relation.' However, where it is clear whether we mean the schema or the instance, we simply use the relation name. Consider the department relation of Figure 2.5. The schema for that relation is: department ( dept name , building , budget ) Note that the attribute dept name appears in both the instructor schema and the department schema. This duplication is not a coincidence. Rather, using common attributes in relation schemas is one way of relating tuples of distinct relations. For example, suppose we wish to find the information about all the instructors who work in the Watson building",
+        "faiss_score": 0.008003083057701588,
+        "faiss_rank": 1,
+        "bm25_score": 23.1815439943801,
+        "bm25_rank": 8,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 2,
+        "chunk_id": 83,
+        "content": ". Instead of r 1 × r 2 producing pairs ( t 1 , t 2 ) of tuples from r 1 and r 2 , the relational algebra concatenates t 1 and t 2 into a single tuple, as shown in Figure 2.12. Since the same attribute name may appear in the schemas of both r 1 and r 2 , we need to devise a naming schema to distinguish between these attributes. We do so here by attaching to an attribute the name of the relation from which the attribute originally came. For example, the relation schema for r = instructor × teaches is: ( instructor . ID , instructor . name , instructor . dept name , instructor . salary , teaches . ID , teaches . course id , teaches . sec id , teaches . semester , teaches . year )  With this schema, we can distinguish instructor . ID from teaches . ID . For those attributes that appear in only one of the two schemas, we shall usually drop the relation-name prefix. This simplification does not lead to any ambiguity. We can then write the relation schema for r as: ( instructor . ID , name , dept name , salary , teaches . ID , course id , sec id , semester , year ) This naming convention requires that the relations that are the arguments of the Cartesian-product operation have distinct names. This requirement causes problems in some cases, such as when the Cartesian product of a relation with itself is desired. A similar problem arises if we use the result of a relational-algebra expression in a Cartesian product, since we shall need a name for the relation so that we can refer to the relation's attributes. In Section 2.6.8, we see how to avoid these problems by using the rename operation. Now that we know the relation schema for r = instructor × teaches , what tuples appear in r ? As you may suspect, we construct a tuple of r out of each possible pair of tuples: one from the instructor relation (Figure 2.1) and one from the teaches relation (Figure 2.7)",
+        "faiss_score": 0.006435802206397057,
+        "faiss_rank": 2,
+        "bm25_score": 21.038025981402974,
+        "bm25_rank": 35,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 3,
+        "chunk_id": 65,
+        "content": ". We need a relation to describe each individual offering, or section, of the class. The schema is: section ( course id , sec id , semester , year , building , room number , time slot id ) Figure 2.6 shows a sample instance of the section relation. We need a relation to describe the association between instructors and the class sections that they teach. The relation schema to describe this association is: teaches ( ID , course id , sec id , semester , year ) Figure 2.7 shows a sample instance of the teaches relation. As you can imagine, there are many more relations maintained in a real university database. In addition to those relations we have listed already, instructor , department , course , section , prereq , and teaches , we use the following relations in this text: - student ( ID , name , dept name , tot cred ) - advisor ( s id , i id ) - takes ( ID , course id , sec id , semester , year , grade )  Figure 2.7 The teaches relation",
+        "faiss_score": 0.006299902684986591,
+        "faiss_rank": 3,
+        "bm25_score": 26.067298545621224,
+        "bm25_rank": 3,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 4,
+        "chunk_id": 412,
+        "content": "We are in a position now to describe how the extended E-R features can be translated into relation schemas.",
+        "faiss_score": 0.006199291441589594,
+        "faiss_rank": 4,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 5,
+        "chunk_id": 112,
+        "content": ". For example, the relation schema for the Cartesian product of relations instructor and teaches is: ( instructor . ID , instructor . name , instructor . dept name , instructor . salary , teaches . ID , teaches . course id , teaches . sec id , teaches . semester , teaches . year ) With this schema, we can distinguish instructor . ID from teaches . ID . For those attributes that appear in only one of the two schemas, we shall usually drop the relation-name prefix. This simplification does not lead to any ambiguity. We can then write the relation schema as: ( instructor . ID , name , dept name , salary , teaches . ID , course id , sec id , semester , year ) To illustrate, consider the instructor relation in Figure 2.1 and the teaches relation in Figure 2.7. Their Cartesian product is shown in Figure 3.6, which includes only a portion of the tuples that make up the Cartesian product result. The Cartesian product by itself combines tuples from instructor and teaches that are unrelated to each other. Each tuple in instructor is combined with every tuple in teaches , even those that refer to a different instructor. The result can be an extremely large relation, and it rarely makes sense to create such a Cartesian product. 2 In practice, SQL may convert the expression into an equivalent form that can be processed more efficiently. However, we shall defer concerns about efficiency to Chapter 15 and Chapter 16.  Figure 3.6 The Cartesian product of the instructor relation with the teaches relation. | instructor . ID name dept name salary teaches . ID course id sec id semester year 10101 Srinivasan Comp. Sci. 65000 10101 CS-101 1 Fall 2017 10101 Srinivasan Comp. Sci. 65000 10101 CS-315 1 Spring 2018 10101 Srinivasan Comp. Sci. 65000 10101 CS-347 1 Fall 2017 10101 Srinivasan Comp. Sci. 65000 12121 FIN-201 1 Spring 2018 10101 Srinivasan Comp. Sci. 65000 15151 MU-199 1 Spring 2018 10101 Srinivasan Comp. Sci. 65000 22222 PHY-101 1 Fall 2017 ... ... ... ... ... ..",
+        "faiss_score": 0.006100104656070471,
+        "faiss_rank": 5,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 6,
+        "chunk_id": 448,
+        "content": "In discussing algorithms for relational database design, we shall need to talk about arbitrary relations and their schema, rather than talking only about examples. Recalling our introduction to the relational model in Chapter 2, we summarize our notation here. - In general, we use Greek letters for sets of attributes (e.g., α ). We use an uppercase Roman letter to refer to a relation schema. We use the notation r ( R ) to show that the schema R is for relation r . Arelation schema is a set of attributes, but not all sets of attributes are schemas. When we use a lowercase Greek letter, we are referring to a set of attributes that may or may not be a schema. A Roman letter is used when we wish to indicate that the set of attributes is definitely a schema. - When a set of attributes is a superkey, we may denote it by K . A superkey pertains to a specific relation schema, so we use the terminology ' K is a superkey for R .' - Weuse a lowercase name for relations. In our examples, these names are intended to be realistic (e.g., instructor ), while in our definitions and algorithms, we use single letters, like r . - The notation r ( R ) thus refers to the relation r with schema R . When we write r ( R ), we thus refer both to the relation and its schema. - A relation, has a particular value at any given time; we refer to that as an instance and use the term 'instance of r .' When it is clear that we are talking about an instance, we may use simply the relation name (e.g., r ). For simplicity, we assume that attribute names have only one meaning within the database schema.",
+        "faiss_score": 0.006095345132052898,
+        "faiss_rank": 6,
+        "bm25_score": 23.71363460072985,
+        "bm25_rank": 4,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 7,
+        "chunk_id": 63,
+        "content": ". Consider the department relation of Figure 2.5. The schema for that relation is: department ( dept name , building , budget ) Note that the attribute dept name appears in both the instructor schema and the department schema. This duplication is not a coincidence. Rather, using common attributes in relation schemas is one way of relating tuples of distinct relations. For example, suppose we wish to find the information about all the instructors who work in the Watson building. We look first at the department relation to find the dept name of all the departments housed in Watson. Then, for each such department, we look in the instructor relation to find the information about the instructor associated with the corresponding dept name . Figure 2.5 The department relation. | dept name building budget Biology Watson 90000 Comp. Sci. Taylor 100000 Elec. Eng. Taylor 85000 Finance Painter 120000 History Painter 50000 Music Packard 80000 Physics Watson 70000 | |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|  Figure 2.6 The section relation",
+        "faiss_score": 0.0060284254141151905,
+        "faiss_rank": 7,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 8,
+        "chunk_id": 84,
+        "content": ". In Section 2.6.8, we see how to avoid these problems by using the rename operation. Now that we know the relation schema for r = instructor × teaches , what tuples appear in r ? As you may suspect, we construct a tuple of r out of each possible pair of tuples: one from the instructor relation (Figure 2.1) and one from the teaches relation (Figure 2.7). Thus, r is a large relation, as you can see from Figure 2.12, which includes only a portion of the tuples that make up r . Assume that we have n 1 tuples in instructor and n 2 tuples in teaches . Then, there are n 1 ∗ n 2 ways of choosing a pair of tuples-one tuple from each relation; so there are n 1 ∗ n 2 tuples in r . In particular for our example, for some tuples t in r , it may be that the two ID values, instructor . ID and teaches . ID , are different. In general, if we have relations r 1 ( R 1 ) and r 2 ( R 2 ), then r 1 × r 2 is a relation r ( R ) whose schema R is the concatenation of the schemas R 1 and R 2 . Relation r contains all tuples t for which there is a tuple t 1 in r 1 and a tuple t 2 in r 2 for which t and t 1 have the same value on the attributes in R 1 and t and t 2 have the same value on the attributes in R 2 .",
+        "faiss_score": 0.005940811242908239,
+        "faiss_rank": 8,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 9,
+        "chunk_id": 413,
+        "content": "There are two different methods of designing relation schemas for an E-R diagram that includes generalization. Although we refer to the generalization in Figure 6.18 in this discussion, we simplify it by including only the first tier of lower-level entity sets-that is, employee and student . We assume that ID is the primary key of person . 1. Create a schema for the higher-level entity set. For each lower-level entity set, create a schema that includes an attribute for each of the attributes of that entity set plus one for each attribute of the primary key of the higher-level entity set. Thus, for the E-R diagram of Figure 6.18 (ignoring the instructor and secretary entity sets) we have three schemas: ``` person ( ID , name, street, city ) employee ( ID , salary ) student ( ID , tot cred ) ``` The primary-key attributes of the higher-level entity set become primary-key attributes of the higher-level entity set as well as all lower-level entity sets. These can be seen underlined in the preceding example. In addition, we create foreign-key constraints on the lower-level entity sets, with their primary-key attributes referencing the primary key of the relation created from the higher-level entity set. In the preceding example, the ID attribute of employee would reference the primary key of person , and similarly for student . 2. Analternative representation is possible, if the generalization is disjoint and complete-that is, if no entity is a member of two lower-level entity sets directly below a higher-level entity set, and if every entity in the higher-level entity set is also a member of one of the lower-level entity sets. Here, we do not create a schema for the higher-level entity set. Instead, for each lower-level entity set, we create a schema that includes an attribute for each of the attributes of that entity set plus one for each attribute of the higher-level entity set",
+        "faiss_score": 0.005621032323688269,
+        "faiss_rank": 9,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 10,
+        "chunk_id": 898,
+        "content": "So far, we have considered only the representation of the relations themselves. A relational database system needs to maintain data about the relations, such as the schema of the relations. In general, such 'data about data' are referred to as metadata . Relational schemas and other metadata about relations are stored in a structure called the data dictionary or system catalog . Among the types of information that the system must store are these: - Names of the relations - Names of the attributes of each relation - Domains and lengths of attributes - Names of views defined on the database, and definitions of those views - Integrity constraints (e.g., key constraints) In addition, many systems keep the following data on users of the system: - Names of users, the default schemas of the users, and passwords or other information to authenticate users - Information about authorizations for each user Further, the database may store statistical and descriptive data about the relations and attributes, such as the number of tuples in each relation, or the number of distinct values for each attribute. The data dictionary may also note the storage organization (heap, sequential, hash, etc.) of relations, and the location where each relation is stored: - If relations are stored in operating system files, the dictionary would note the names of the file (or files) containing each relation. - If the database stores all relations in a single file, the dictionary may note the blocks containing records of each relation in a data structure such as a linked list. In Chapter 14, in which we study indices, we shall see a need to store information about each index on each of the relations: - Name of the index  - Name of the relation being indexed - Attributes on which the index is defined - Type of index formed All this metadata information constitutes, in effect, a miniature database",
+        "faiss_score": 0.005592255853116512,
+        "faiss_rank": 10,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      }
+    ],
+    "hyde_query": null,
+    "judgements": {
+      "must_rubric_satisfaction": [
+        {
+          "criterion": "Define 'relation' as a set or collection of tuples.",
+          "verdict": "met",
+          "reason": "The student correctly defines 'relation' as a collection of tuples."
+        },
+        {
+          "criterion": "Define 'relation schema' as the structural definition (list of attributes) and their domains.",
+          "verdict": "met",
+          "reason": "The student correctly defines 'relation schema' as the structural definition of attributes and their domains."
+        }
+      ],
+      "optional_rubric_satisfaction": [
+        {
+          "criterion": "Distinguish between the static nature of a schema and the dynamic nature of a relation instance.",
+          "verdict": "met",
+          "reason": "The student correctly distinguishes between the static nature of a schema and the dynamic nature of a relation instance by explaining that the schema remains constant while the relation can change over time."
+        }
+      ],
+      "answer_correctness": {
+        "without_reference": {
+          "score": 1,
+          "explanation": "The answer accurately defines both terms and explains the difference between a relation and a relation schema, addressing all key rubric points.",
+          "strengths": [
+            "Clear distinction between relation and relation schema",
+            "Use of examples to illustrate concepts"
+          ],
+          "weaknesses": []
+        },
+        "with_reference": {
+          "score": 1,
+          "explanation": "The student correctly defined both terms and explained the difference between a relation and a relation schema, addressing all key rubric points accurately.",
+          "strengths": [
+            "Clear and concise definitions for both terms"
+          ],
+          "weaknesses": []
+        }
+      },
+      "chunk_relevance": {
+        "individual": [],
+        "group": [
+          {
+            "chunk_id": 62,
+            "rank": 1,
+            "verdict": "relevant",
+            "reason": "The chunk discusses the difference between relation and relation schema in the context of database design and terminology."
+          },
+          {
+            "chunk_id": 83,
+            "rank": 2,
+            "verdict": "not_relevant",
+            "reason": "The chunk does not directly address the difference between relation and relation schema as asked in the question."
+          },
+          {
+            "chunk_id": 65,
+            "rank": 3,
+            "verdict": "not_relevant",
+            "reason": "The chunk does not address the difference between relation and relation schema as asked in the question."
+          },
+          {
+            "chunk_id": 412,
+            "rank": 4,
+            "verdict": "relevant",
+            "reason": "The chunk directly relates to relation schemas by discussing how extended E-R features can be translated into relation schemas."
+          },
+          {
+            "chunk_id": 112,
+            "rank": 5,
+            "verdict": "relevant",
+            "reason": "The chunk provides detailed information about relation schemas and their application in SQL, including the distinction between relation and relation schema."
+          },
+          {
+            "chunk_id": 448,
+            "rank": 6,
+            "verdict": "relevant",
+            "reason": "The chunk explains the notation and terminology used in relation schemas, which is relevant to understanding the difference between relation and relation schema."
+          },
+          {
+            "chunk_id": 63,
+            "rank": 7,
+            "verdict": "relevant",
+            "reason": "The chunk discusses relation schemas and mentions the department relation schema, which relates to the question."
+          },
+          {
+            "chunk_id": 84,
+            "rank": 8,
+            "verdict": "not_relevant",
+            "reason": "The chunk does not directly address the difference between relation and relation schema."
+          },
+          {
+            "chunk_id": 413,
+            "rank": 9,
+            "verdict": "not_relevant",
+            "reason": "The chunk is about designing relation schemas for an E-R diagram and does not relate to the specific terms 'relation' and 'relation schema'."
+          },
+          {
+            "chunk_id": 898,
+            "rank": 10,
+            "verdict": "relevant",
+            "reason": "The chunk discusses relational schemas and metadata about relations, which are directly related to the terms 'relation' and 'relation schema' as described in the question."
+          }
+        ]
+      },
+      "faithfulness": {
+        "verdict": "skipped",
+        "unsupported_claims": [],
+        "explanation": "Faithfulness evaluation was skipped."
+      }
+    },
+    "summary": {
+      "must_rubric_met_rate": 1.0,
+      "must_rubric_met_count": 2,
+      "must_rubric_total": 2,
+      "opt_rubric_met_rate": 1.0,
+      "opt_rubric_met_count": 1,
+      "opt_rubric_total": 1,
+      "correctness_with_ref": 1,
+      "correctness_no_ref": 1,
+      "faithfulness_verdict": "skipped",
+      "faithfulness_score": null,
+      "chunk_relevance_rate": 0.6
+    },
+    "judge_backend": "local (qwen2.5-3b-instruct-q8_0.gguf)",
+    "config_state": {
+      "chunk_mode": "recursive_sections",
+      "chunk_size_in_chars": 2000,
+      "chunk_overlap": 500,
+      "top_k": 10,
+      "num_candidates": 50,
+      "embed_model": "models/embedders/mxbai-embed-large-v1.Q4_K_M.gguf",
+      "embedding_model_context_window": 4096,
+      "ensemble_method": "rrf",
+      "rrf_k": 60,
+      "ranker_weights": {
+        "faiss": 1,
+        "bm25": 0,
+        "index_keywords": 0
+      },
+      "rerank_mode": "cross_encoder",
+      "rerank_top_k": 5,
+      "enable_clustering": true,
+      "n_clusters": 80,
+      "n_probe_clusters": 4,
+      "max_gen_tokens": 400,
+      "gen_model": "models/generators/qwen2.5-3b-instruct-q8_0.gguf",
+      "system_prompt_mode": "baseline",
+      "disable_chunks": false,
+      "use_golden_chunks": false,
+      "output_mode": "terminal",
+      "metrics": [
+        "all"
+      ],
+      "use_hyde": false,
+      "hyde_max_tokens": 300,
+      "use_double_prompt": false,
+      "semantic_cache_enabled": false,
+      "semantic_cache_bi_encoder_threshold": 0.9,
+      "semantic_cache_cross_encoder_threshold": 0.99,
+      "enable_history": true,
+      "max_history_turns": 3,
+      "use_indexed_chunks": false,
+      "extracted_index_path": "data/extracted_index.json",
+      "page_to_chunk_map_path": "index/sections/textbook_index_page_to_chunk_map.json",
+      "enable_topic_extraction": false
+    },
+    "timestamp": "2026-06-12T10:02:55"
+  },
+  {
+    "id": "3.5",
+    "benchmark_item": {
+      "id": "3.5",
+      "question": "Suppose that we have a relation marks(ID,score) and we wish to assign grades to students based on the score as follows: grade F if score < 40, grade C if 40 <= score < 60, grade B if 60 <= score < 80, and grade A if 80 <= score. Write SQL queries to do the following: a. Display the grade for each student, based on the marks relation. b. Find the number of students with each grade.",
+      "answer": "a. SELECT ID, CASE WHEN score < 40 THEN 'F' WHEN score < 60 THEN 'C' WHEN score < 80 THEN 'B' ELSE 'A' END FROM marks. b. WITH grades(ID,grade) AS (SELECT ID, CASE WHEN score < 40 THEN 'F' WHEN score < 60 THEN 'C' WHEN score < 80 THEN 'B' ELSE 'A' END FROM marks) SELECT grade, COUNT(ID) FROM grades GROUP BY grade.",
+      "must_rubric": [
+        "Use 'CASE' syntax to evaluate the score brackets.",
+        "Check specific boundaries: < 40 for 'F', < 60 for 'C', < 80 for 'B', and ELSE/others for 'A'.",
+        "For part (b), use 'GROUP BY grade' and 'COUNT' to aggregate results."
+      ],
+      "optional_rubric": [
+        "Use a Common Table Expression (CTE) or subquery to structure the aggregate query for part (b)."
+      ]
+    },
+    "ts_answer": "To address the questions, we need to write SQL queries that take the `marks` relation as input and perform the required operations.\n\n### a. Display the grade for each student, based on the marks relation.\n\nThe grade for each student can be determined based on the score. We can use a `CASE` statement within the `SELECT` clause to assign the appropriate grade to each student. Here is the SQL query to achieve this:\n\n```sql\nSELECT ID, \n       CASE \n           WHEN score < 40 THEN 'F' \n           WHEN score BETWEEN 40 AND 59 THEN 'C' \n           WHEN score BETWEEN 60 AND 79 THEN 'B' \n           WHEN score >= 80 THEN 'A' \n       END AS grade\nFROM marks;\n```\n\n### b. Find the number of students with each grade.\n\nTo find the number of students with each grade, we can use the `COUNT` function in combination with the `CASE` statement. Here is the SQL query to achieve this:\n\n```sql\nSELECT grade, \n       COUNT(*) AS num_students\nFROM (\n    SELECT ID, \n           CASE \n               WHEN score < 40 THEN 'F' \n               WHEN score BETWEEN 40 AND 59 THEN 'C' \n               WHEN score BETWEEN 60 AND 79 THEN 'B' \n               WHEN score >= 80 THEN 'A' \n           END AS grade\n    FROM marks\n) AS subquery\nGROUP BY grade;\n```\n\n### Explanation:\n1. **Displaying the Grade:**\n   - The `CASE` statement checks the score and assigns the appropriate grade.\n   - The `SELECT` clause includes the `ID` and the calculated `grade`.\n\n2. **Counting the Number of Students with Each Grade:**\n   - The subquery inside the `FROM` clause performs the same grading logic as in the first query.\n   - The outer query groups the",
+    "retrieved_chunks": [
+      {
+        "rank": 1,
+        "chunk_id": 324,
+        "content": "Finding the position of a value within a set is a common operation. For instance, we may wish to assign students a rank in class based on their grade-point average (GPA), with the rank 1 going to the student with the highest GPA, the rank 2 to the student with the next highest GPA, and so on. A related type of query is to find the percentile in which a value in a (multi)set belongs, for example, the bottom third, middle third, or top third. While such queries can be expressed using the SQL constructs we have seen so far, they are difficult to express and inefficient to evaluate. Programmers may resort to writing the query partly in SQL and partly in a programming language. We study SQL support for direct expression of these types of queries here. In our university example, the takes relation shows the grade each student earned in each course taken. To illustrate ranking, let us assume we have a view student grades ( ID, GPA ) giving the grade-point average of each student. 10 Ranking is done with an order by specification. The following query gives the rank of each student: ``` select ID , rank () over ( order by ( GPA ) desc ) as s rank from student grades ; ``` Note that the order of tuples in the output is not defined, so they may not be sorted by rank. An extra order by clause is needed to get them in sorted order, as follows: ``` select ID , rank () over ( order by ( GPA ) desc ) as s rank from student grades order by s rank ; ``` A basic issue with ranking is how to deal with the case of multiple tuples that are the same on the ordering attribute(s). In our example, this means deciding what to do if there are two students with the same GPA. The rank function gives the same rank to all tuples that are equal on the order by attributes. For instance, if the highest GPA is shared by two students, both would get rank 1",
+        "faiss_score": 0.008811475709080696,
+        "faiss_rank": 1,
+        "bm25_score": 142.674896155067,
+        "bm25_rank": 1,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 2,
+        "chunk_id": 325,
+        "content": ". In our example, this means deciding what to do if there are two students with the same GPA. The rank function gives the same rank to all tuples that are equal on the order by attributes. For instance, if the highest GPA is shared by two students, both would get rank 1. The next rank given would be 3, not 2, so if three students get the next highest GPA, they would all get rank 3, and the next student(s) would get rank 6, and so on. There is also a dense rank function that does not create gaps in the ordering. In the preceding example, the tuples with the second highest value all get rank 2, and tuples with the third highest value get rank 3, and so on. 10 The SQL statement to create the view student grades is somewhat complex since we must convert the letter grades in the takes relation to numbers and weight the grades for each course by the number of credits for that course. The definition of this view is the goal of Exercise 4.6.  If there are null values among the values being ranked, they are treated as the highest values. That makes sense in some situations, although for our example, it would result in students with no courses being shown as having the highest GPAs. Thus, we see that care needs to be taken in writing ranking queries in cases where null values may appear. SQL permits the user to specify where they should occur by using nulls first or nulls last , for instance: select ID , rank () over ( order by GPA desc nulls last ) as s rank from student grades ; It is possible to express the preceding query with the basic SQL aggregation functions, using the following query: ``` select ID , (1 + ( select count (*) from student grades B where B . GPA > A . GPA )) as s rank ``` from student grades A order by s rank ; It should be clear that the rank of a student is merely 1 plus the number of students with a higher GPA , which is exactly what the query specifies",
+        "faiss_score": 0.008327232673764229,
+        "faiss_rank": 2,
+        "bm25_score": 111.24595919006877,
+        "bm25_rank": 12,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 3,
+        "chunk_id": 326,
+        "content": ". GPA > A . GPA )) as s rank ``` from student grades A order by s rank ; It should be clear that the rank of a student is merely 1 plus the number of students with a higher GPA , which is exactly what the query specifies. 11 However, this computation of each student's rank takes time linear in the size of the relation, leading to an overall time quadratic in the size of the relation. On large relations, the above query could take a very long time to execute. In contrast, the system's implementation of the rank clause can sort the relation and compute the rank in much less time. Ranking can be done within partitions of the data. For instance, suppose we wish to rank students by department rather than across the entire university. Assume that a view is defined like student grades but including the department name: dept grades ( ID, dept name, GPA ). The following query then gives the rank of students within each section: select ID , dept name , rank () over ( partition by dept name order by GPA desc ) as dept rank from dept grades order by dept name , dept rank ``` ; ``` 11 There is a slight technical difference if a student has not taken any courses and therefore has a null GPA. Due to how comparisons of null values work in SQL, a student with a null GPA does not contribute to other students' count values.  The outer order by clause orders the result tuples by department name, and within each department by the rank. Multiple rank expressions can be used within a single select statement; thus, we can obtain the overall rank and the rank within the department by using two rank expressions in the same select clause. When ranking (possibly with partitioning) occurs along with a group by clause, the group by clause is applied first, and partitioning and ranking are done on the results of the group by . Thus, aggregate values can then be used for ranking",
+        "faiss_score": 0.007593175396323204,
+        "faiss_rank": 3,
+        "bm25_score": 100.89706294894921,
+        "bm25_rank": 27,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 4,
+        "chunk_id": 117,
+        "content": ". If the instructor relation is as shown in Figure 2.1 and the teaches relation is as shown in Figure 2.7, then the relation that results from the preceding query is shown in Figure 3.7. Observe that instructors Gold, Califieri, and Singh, who have not taught any course, do not appear in Figure 3.7. If we wished to find only instructor names and course identifiers for instructors in the Computer Science department, we could add an extra predicate to the where clause, as shown below. select name , course id from instructor , teaches where instructor . ID = teaches . ID and instructor . dept name = 'Comp. Sci.'; Note that since the dept name attribute occurs only in the instructor relation, we could have used just dept name , instead of instructor . dept name in the above query. In general, the meaning of an SQL query can be understood as follows: 1. Generate a Cartesian product of the relations listed in the from clause. 2. Apply the predicates specified in the where clause on the result of Step 1.  3. For each tuple in the result of Step 2, output the attributes (or results of expressions) specified in the select clause. This sequence of steps helps make clear what the result of an SQL query should be, not how it should be executed. A real implementation of SQL would not execute the query in this fashion; it would instead optimize evaluation by generating (as far as possible) only elements of the Cartesian product that satisfy the where clause predicates. We study such implementation techniques in Chapter 15 and Chapter 16. When writing queries, you should be careful to include appropriate where clause conditions. If you omit the where clause condition in the preceding SQL query, it will output the Cartesian product, which could be a huge relation",
+        "faiss_score": 0.007573203183710575,
+        "faiss_rank": 4,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 5,
+        "chunk_id": 108,
+        "content": ". This shows what would result if we gave a 10% raise to each instructor; note, however, that it does not result in any change to the instructor relation. SQL also provides special data types, such as various forms of the date type, and allows several arithmetic functions to operate on these types. We discuss this further in Section 4.5.1. The where clause allows us to select only those rows in the result relation of the from clause that satisfy a specified predicate. Consider the query 'Find the names of all instructors in the Computer Science department who have salary greater than $70,000.' This query can be written in SQL as:  name ## Katz Brandt Figure 3.4 Result of 'Find the names of all instructors in the Computer Science department who have salary greater than $70,000.' select name from instructor where dept name = 'Comp. Sci.' and salary &gt; 70000; If the instructor relation is as shown in Figure 2.1, then the relation that results from the preceding query is shown in Figure 3.4. SQL allows the use of the logical connectives and , or , and not in the where clause. The operands of the logical connectives can be expressions involving the comparison operators &lt; , &lt; = , &gt; , &gt; = , = , and &lt;&gt; . SQL allows us to use the comparison operators to compare strings and arithmetic expressions, as well as special types, such as date types. We shall explore other features of where clause predicates later in this chapter.",
+        "faiss_score": 0.007425990421324968,
+        "faiss_rank": 5,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 6,
+        "chunk_id": 109,
+        "content": "So far our example queries were on a single relation. Queries often need to access information from multiple relations. We now study how to write such queries. As an example, suppose we want to answer the query 'Retrieve the names of all instructors, along with their department names and department building name.' Looking at the schema of the relation instructor , we realize that we can get the department name from the attribute dept name , but the department building name is present in the attribute building of the relation department . To answer the query, each tuple in the instructor relation must be matched with the tuple in the department relation whose dept name value matches the dept name value of the instructor tuple. In SQL, to answer the above query, we list the relations that need to be accessed in the from clause and specify the matching condition in the where clause. The above query can be written in SQL as select name , instructor . dept name , building from instructor , department where instructor . dept name = department . dept name ; If the instructor and department relations are as shown in Figure 2.1 and Figure 2.5 respectively, then the result of this query is shown in Figure 3.5. Note that the attribute dept name occurs in both the relations instructor and department , and the relation name is used as a prefix (in instructor . dept name , and de- partment . dept name ) to make clear to which attribute we are referring. In contrast, the attributes name and building appear in only one of the relations and therefore do not need to be prefixed by the relation name.  Figure 3.5 The result of 'Retrieve the names of all instructors, along with their department names and department building name.' | name dept name building Srinivasan Comp. Sci. Taylor Wu Finance Painter Mozart Music Packard Einstein Physics Watson El Said History Painter Gold Physics Watson Katz Comp. Sci",
+        "faiss_score": 0.0069772289134562016,
+        "faiss_rank": 6,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 7,
+        "chunk_id": 173,
+        "content": ". So, going back to the example of the relations student and takes , computing: ## student natural join takes considers only those pairs of tuples where both the tuple from student and the tuple from takes have the same value on the common attribute, ID . The resulting relation, shown in Figure 4.3, has only 22 tuples, the ones that give information about a student and a course that the student has actually taken. Notice that we do not repeat those attributes that appear in the schemas of both relations; rather they appear only once. Notice also the order in which the attributes are listed: first the attributes common to the schemas of both relations, second those attributes unique to the schema of the first relation, and finally, those attributes unique to the schema of the second relation. Earlier we wrote the query 'For all students in the university who have taken some course, find their names and the course ID of all courses they took' as: select name , course id from student , takes where student . ID = takes . ID ; This query can be written more concisely using the natural-join operation in SQL as: select name , course id from student natural join takes ; Both of the above queries generate the same result. 1 1 For notational symmetry, SQL allows the Cartesian product, which we have denoted with a comma, to be denoted by the keywords cross join . Thus, ' from student , takes ' could be expressed equivalently as ' from student cross join takes '.  Figure 4.3 The natural join of the student relation with the takes relation. | ID name dept name tot cred course id sec id semester year grade 00128 Zhang Comp. Sci. 102 CS-101 1 Fall 2017 A 00128 Zhang Comp. Sci. 102 CS-347 1 Fall 2017 A- 12345 Shankar Comp. Sci. 32 CS-101 1 Fall 2017 C 12345 Shankar Comp. Sci. 32 CS-190 2 Spring 2017 A 12345 Shankar Comp. Sci. 32 CS-315 1 Spring 2018 A 12345 Shankar Comp. Sci",
+        "faiss_score": 0.006957667879760265,
+        "faiss_rank": 7,
+        "bm25_score": 107.91897789463428,
+        "bm25_rank": 20,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 8,
+        "chunk_id": 172,
+        "content": "Consider the following SQL query, which computes for each student the set of courses a student has taken: select name , course id from student , takes where student . ID = takes . ID ; Note that this query outputs only students who have taken some course. Students who have not taken any course are not output.  Note that in the student and takes table, the matching condition required student . ID to be equal to takes . ID . These are the only attributes in the two relations that have the same name. In fact, this is a common case; that is, the matching condition in the from clause most often requires all attributes with matching names to be equated. To make the life of an SQL programmer easier for this common case, SQL supports an operation called the natural join , which we describe below. In fact, SQL supports several other ways in which information from two or more relations can be joined together. We have already seen how a Cartesian product along with a where clause predicate can be used to join information from multiple relations. Other ways of joining information from multiple relations are discussed in Section 4.1.2 through Section 4.1.4. The natural join operation operates on two relations and produces a relation as the result. Unlike the Cartesian product of two relations, which concatenates each tuple of the first relation with every tuple of the second, natural join considers only those pairs of tuples with the same value on those attributes that appear in the schemas of both relations. So, going back to the example of the relations student and takes , computing: ## student natural join takes considers only those pairs of tuples where both the tuple from student and the tuple from takes have the same value on the common attribute, ID . The resulting relation, shown in Figure 4.3, has only 22 tuples, the ones that give information about a student and a course that the student has actually taken",
+        "faiss_score": 0.006923621986061335,
+        "faiss_rank": 8,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 9,
+        "chunk_id": 90,
+        "content": "It is convenient at times to write a relational-algebra expression by assigning parts of it to temporary relation variables. The assignment operation, denoted by ← , works like assignment in a programming language. To illustrate this operation, consider the query to find courses that run in Fall 2017 as well as Spring 2018, which we saw earlier. We could write it as: Figure 2.16 Courses offered in the Fall 2017 semester but not in Spring 2018 semester. | course id CS-347 PHY-101 | |------------------------------|  <!-- formula-not-decoded --> The final line above displays the query result. The preceding two lines assign the query result to a temporary relation. The evaluation of an assignment does not result in any relation being displayed to the user. Rather, the result of the expression to the right of the ← is assigned to the relation variable on the left of the ← . This relation variable may be used in subsequent expressions. With the assignment operation, a query can be written as a sequential program consisting of a series of assignments followed by an expression whose value is displayed as the result of the query. For relational-algebra queries, assignment must always be made to a temporary relation variable. Assignments to permanent relations constitute a database modification. Note that the assignment operation does not provide any additional power to the algebra. It is, however, a convenient way to express complex queries.",
+        "faiss_score": 0.0067143854685127735,
+        "faiss_rank": 9,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      },
+      {
+        "rank": 10,
+        "chunk_id": 118,
+        "content": ". We study such implementation techniques in Chapter 15 and Chapter 16. When writing queries, you should be careful to include appropriate where clause conditions. If you omit the where clause condition in the preceding SQL query, it will output the Cartesian product, which could be a huge relation. For the example instructor relation in Figure 2.1 and the example teaches relation in Figure 2.7, their Cartesian product has 12 ∗ 13 = 156 tuples-more than we can show in the text! To make matters worse, suppose we have a more realistic number of instructors than we show in our sample relations in the figures, say 200 instructors. Let's assume each instructor teaches three courses, so we have 600 tuples in the teaches relation. Then the preceding iterative process generates 200 ∗ 600 = 120,000 tuples in the result.",
+        "faiss_score": 0.006678811740130186,
+        "faiss_rank": 10,
+        "bm25_score": 0,
+        "bm25_rank": 0,
+        "index_score": 0,
+        "index_rank": 0
+      }
+    ],
+    "hyde_query": null,
+    "judgements": {
+      "must_rubric_satisfaction": [
+        {
+          "criterion": "Use 'CASE' syntax to evaluate the score brackets.",
+          "verdict": "met",
+          "reason": "The use of 'CASE' syntax to evaluate score brackets is correct."
+        },
+        {
+          "criterion": "Check specific boundaries: < 40 for 'F', < 60 for 'C', < 80 for 'B', and ELSE/others for 'A'.",
+          "verdict": "met",
+          "reason": "The specific boundaries for each grade are correctly identified and used in the 'CASE' statement."
+        },
+        {
+          "criterion": "For part (b), use 'GROUP BY grade' and 'COUNT' to aggregate results.",
+          "verdict": "met",
+          "reason": "The use of 'GROUP BY grade' and 'COUNT' in the second query to aggregate results is correct."
+        }
+      ],
+      "optional_rubric_satisfaction": [
+        {
+          "criterion": "Use a Common Table Expression (CTE) or subquery to structure the aggregate query for part (b).",
+          "verdict": "not_met",
+          "reason": "The provided answer does not use a Common Table Expression (CTE) or subquery to structure the aggregate query for part (b)."
+        }
+      ],
+      "answer_correctness": {
+        "without_reference": {
+          "score": 1,
+          "explanation": "The answer correctly uses SQL queries to display the grade for each student and to count the number of students with each grade, addressing all key rubric points accurately.",
+          "strengths": [
+            "Correct use of CASE statement for grading logic.",
+            "Proper grouping and counting in the second query."
+          ],
+          "weaknesses": []
+        },
+        "with_reference": {
+          "score": 1,
+          "explanation": "The student's answer correctly uses the `CASE` statement to assign grades based on the score and provides the correct SQL queries for both parts of the question.",
+          "strengths": [
+            "Correctly addressed both parts of the question with appropriate SQL queries"
+          ],
+          "weaknesses": []
+        }
+      },
+      "chunk_relevance": {
+        "individual": [],
+        "group": [
+          {
+            "chunk_id": 324,
+            "rank": 1,
+            "verdict": "not_relevant",
+            "reason": "The chunk discusses ranking and percentile queries, which are not directly related to the SQL queries for assigning grades based on scores as described in the question."
+          },
+          {
+            "chunk_id": 325,
+            "rank": 2,
+            "verdict": "not_relevant",
+            "reason": "The chunk discusses ranking and percentile queries, which are not directly related to the SQL queries for assigning grades based on scores as described in the question."
+          },
+          {
+            "chunk_id": 326,
+            "rank": 3,
+            "verdict": "relevant",
+            "reason": "The chunk provides information about ranking and partitioning in SQL, which can be used to answer part (a) of the question by assigning grades based on scores."
+          },
+          {
+            "chunk_id": 117,
+            "rank": 4,
+            "verdict": "not_relevant",
+            "reason": "The chunk discusses the Cartesian product and where clause conditions in SQL, but does not provide information relevant to the specific SQL queries about grades and student grades."
+          },
+          {
+            "chunk_id": 108,
+            "rank": 5,
+            "verdict": "not_relevant",
+            "reason": "The chunk discusses salary and department information, but does not provide information relevant to the specific SQL queries about grades and student grades."
+          },
+          {
+            "chunk_id": 109,
+            "rank": 6,
+            "verdict": "not_relevant",
+            "reason": "The chunk discusses retrieving information from multiple relations, but does not provide information relevant to the specific SQL queries about grades and student grades."
+          },
+          {
+            "chunk_id": 173,
+            "rank": 7,
+            "verdict": "not_relevant",
+            "reason": "The chunk discusses the natural join operation and its application to the student and takes relations, but does not provide SQL queries for the given problem."
+          },
+          {
+            "chunk_id": 172,
+            "rank": 8,
+            "verdict": "relevant",
+            "reason": "The chunk explains the natural join operation and its application to the student and takes relations, which is relevant to the SQL queries needed for the problem."
+          },
+          {
+            "chunk_id": 90,
+            "rank": 9,
+            "verdict": "not_relevant",
+            "reason": "The chunk discusses the assignment operation in relational algebra and its use in expressing complex queries, but does not provide SQL queries for the given problem."
+          },
+          {
+            "chunk_id": 118,
+            "rank": 10,
+            "verdict": "not_relevant",
+            "reason": "The chunk discusses implementation techniques and Cartesian products, which are not directly relevant to the SQL queries about assigning grades based on the marks relation."
+          }
+        ]
+      },
+      "faithfulness": {
+        "verdict": "skipped",
+        "unsupported_claims": [],
+        "explanation": "Faithfulness evaluation was skipped."
+      }
+    },
+    "summary": {
+      "must_rubric_met_rate": 1.0,
+      "must_rubric_met_count": 3,
+      "must_rubric_total": 3,
+      "opt_rubric_met_rate": 0.0,
+      "opt_rubric_met_count": 0,
+      "opt_rubric_total": 1,
+      "correctness_with_ref": 1,
+      "correctness_no_ref": 1,
+      "faithfulness_verdict": "skipped",
+      "faithfulness_score": null,
+      "chunk_relevance_rate": 0.2
+    },
+    "judge_backend": "local (qwen2.5-3b-instruct-q8_0.gguf)",
+    "config_state": {
+      "chunk_mode": "recursive_sections",
+      "chunk_size_in_chars": 2000,
+      "chunk_overlap": 500,
+      "top_k": 10,
+      "num_candidates": 50,
+      "embed_model": "models/embedders/mxbai-embed-large-v1.Q4_K_M.gguf",
+      "embedding_model_context_window": 4096,
+      "ensemble_method": "rrf",
+      "rrf_k": 60,
+      "ranker_weights": {
+        "faiss": 1,
+        "bm25": 0,
+        "index_keywords": 0
+      },
+      "rerank_mode": "cross_encoder",
+      "rerank_top_k": 5,
+      "enable_clustering": true,
+      "n_clusters": 80,
+      "n_probe_clusters": 4,
+      "max_gen_tokens": 400,
+      "gen_model": "models/generators/qwen2.5-3b-instruct-q8_0.gguf",
+      "system_prompt_mode": "baseline",
+      "disable_chunks": false,
+      "use_golden_chunks": false,
+      "output_mode": "terminal",
+      "metrics": [
+        "all"
+      ],
+      "use_hyde": false,
+      "hyde_max_tokens": 300,
+      "use_double_prompt": false,
+      "semantic_cache_enabled": false,
+      "semantic_cache_bi_encoder_threshold": 0.9,
+      "semantic_cache_cross_encoder_threshold": 0.99,
+      "enable_history": true,
+      "max_history_turns": 3,
+      "use_indexed_chunks": false,
+      "extracted_index_path": "data/extracted_index.json",
+      "page_to_chunk_map_path": "index/sections/textbook_index_page_to_chunk_map.json",
+      "enable_topic_extraction": false
+    },
+    "timestamp": "2026-06-12T10:06:21"
+  }
+]

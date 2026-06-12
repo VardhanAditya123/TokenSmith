@@ -1,9 +1,9 @@
 # TokenSmith External Benchmark Report
 
 **Run label:** `book_exc_local`  
-**Generated:** 2026-06-09 11:21:30  
+**Generated:** 2026-05-12 01:51:10  
 **Benchmark file:** `src/benchmark_eval/BOOK-EXC_QARCs.json`  
-**Questions evaluated:** 40  
+**Questions evaluated:** 41  
 **Judge:** `local (qwen2.5-3b-instruct-q8_0.gguf)`  
 
 ---
@@ -15,9 +15,8 @@
   chunk_overlap: 300
   chunk_size_in_chars: 2000
   disable_chunks: False
-  embed_model: models/embedders/mxbai-embed-large-v1.Q4_K_M.gguf
-  embedding_model_context_window: 1024
-  enable_clustering: True
+  embed_model: models/embedders/Qwen3-Embedding-4B-Q5_K_M.gguf
+  embedding_model_context_window: 4096
   enable_history: True
   enable_topic_extraction: False
   ensemble_method: rrf
@@ -27,13 +26,11 @@
   max_gen_tokens: 400
   max_history_turns: 3
   metrics: ['all']
-  n_clusters: 20
-  n_probe_clusters: 4
   num_candidates: 50
   output_mode: terminal
   page_to_chunk_map_path: index/sections/textbook_index_page_to_chunk_map.json
   ranker_weights: {'faiss': 1, 'bm25': 0, 'index_keywords': 0}
-  rerank_mode: 
+  rerank_mode: cross_encoder
   rerank_top_k: 5
   rrf_k: 60
   semantic_cache_bi_encoder_threshold: 0.9
@@ -53,29 +50,29 @@
 
 | Metric | Score | Notes |
 | --- | --- | --- |
-| Must Rubric Met Rate | 60.8% | Fraction of required rubric criteria fully met |
-| Optional Rubric Met Rate | 42.3% | Informational only — not counted in overall score |
+| Must Rubric Met Rate | 59.3% | Fraction of required rubric criteria fully met |
+| Optional Rubric Met Rate | 46.4% | Informational only — not counted in overall score |
 | Answer Correctness (with ref) | 0.68 | Mean -1/0/1 score judged with mock answer as reference |
-| Answer Correctness (no ref) | 0.40 | Mean -1/0/1 score judged without reference |
-| Answer Faithfulness | 0.63 | 1=faithful, 0.5=partial, 0=unfaithful |
-| Chunk Relevance Rate | 40.7% | Fraction of retrieved chunks judged relevant to the question |
+| Answer Correctness (no ref) | 0.41 | Mean -1/0/1 score judged without reference |
+| Answer Faithfulness | 0.65 | 1=faithful, 0.5=partial, 0=unfaithful |
+| Chunk Relevance Rate | 39.4% | Fraction of retrieved chunks judged relevant to the question |
 
 ### Answer Correctness Distribution (with reference)
 
 | Score | Count | Percentage |
 | --- | --- | --- |
-| ✅ 1 (Fully correct) | 28 | 70.0% |
-| ⚠️ 0 (Partially correct) | 11 | 27.5% |
-| ❌ -1 (Incorrect) | 1 | 2.5% |
+| ✅ 1 (Fully correct) | 29 | 70.7% |
+| ⚠️ 0 (Partially correct) | 11 | 26.8% |
+| ❌ -1 (Incorrect) | 1 | 2.4% |
 
 ### Faithfulness Distribution
 
 | Verdict | Count | Percentage |
 | --- | --- | --- |
-| ✅ Faithful | 4 | 10.0% |
-| ⚠️ Partially faithful | 11 | 27.5% |
+| ✅ Faithful | 5 | 12.2% |
+| ⚠️ Partially faithful | 12 | 29.3% |
 | ❌ Unfaithful | 0 | 0.0% |
-| ❓ Uncertain | 23 | 57.5% |
+| ❓ Uncertain | 24 | 58.5% |
 
 ---
 
@@ -312,51 +309,49 @@ participated (report number, license plate, driver id, damage amount)
 
 ### Question `4.9`
 
-**Q:** SQL allows a foreign-key dependecy to refer to the same relation, as in the following example: CREATE TABLE manager ( employee_id char(20), manager_id char(20), PRIMARY KEY employee_id, FOREIGN KEY (manager_id) REFERENCES manager (employee_id) ON DELETE CASCADE ); Here, employee_id is a key to the table manager, meaning that each employee has at at most one manager. The foreign-key clause requires that every manager also be an employee. Explain exactly what happens when a tuple in the relation manager is deleted.
+**Q:** SQL allows a foreign-key dependency to refer to the same relation... Explain exactly what happens when a tuple in the relation manager is deleted.
 
 | Must Rubric | Opt Rubric | Correct (ref) | Correct (no ref) | Faithfulness |
 | --- | --- | --- | --- | --- |
-| 2/2 | 0/0 | ✅ Fully correct | ✅ Fully correct | ❓ Unknown |
+| 0/2 | 0/0 | ⚠️ Partially correct | ⚠️ Partially correct | ✅ Faithful |
 
 **TokenSmith Answer:**
 
-> When a tuple in the relation `manager` is deleted, the behavior depends on the `ON DELETE CASCADE` clause specified in the foreign key constraint. Here's a detailed explanation of what happens:  
+> When a tuple in the relation manager is deleted, and there are foreign-key dependencies that refer to the same relation, the behavior depends on the specific SQL configuration and the actions specified in the foreign key constraints.  
 >   
-> 1. **Cascade Deletion**: The `ON DELETE CASCADE` clause means that if a tuple is deleted from the `manager` relation, the corresponding tuple in the `employee_id` column of the `manager` relation will also be deleted.   
+>             In SQL, if a foreign key constraint is defined such that it references the same relation (i.e., the referenced relation and the referencing relation are the same), the system will typically handle the deletion in a cascading manner. This means that if a tuple is deleted from the relation that contains the foreign key, the system will automatically delete the corresponding tuples in the same relation that reference the deleted tuple.  
 >   
-> 2. **Tuple in `manager` Relation**: Suppose the tuple `(employee_id = 'E001', manager_id = 'M001')` exists in the `manager` relation. When this tuple is deleted, the `employee_id` value 'E001' will also be deleted from the `employee` relation.  
+>             For example, if there is a foreign key constraint on the `course` relation that references the `dept_name` attribute, and a tuple in the `department` relation is deleted, the system will automatically delete the corresponding tuples in the `course` relation that have the same `dept_name` value.  
 >   
-> 3. **Impact on `employee` Relation**: The deletion of 'E001' from the `employee` relation will cause a cascading effect. If 'E001' is a key in the `employee` relation, the deletion will propagate to any other relations where 'E001' is referenced as a foreign key.  
+>             However, it's important to note that this cascading behavior is only possible if the foreign key constraint is defined with the `ON DELETE CASCADE` clause. If the `ON DELETE CASCADE` clause is not specified, the system will not automatically delete the tuples in the referencing relation when a deletion occurs in the referenced relation.  
 >   
-> 4. **Propagation of Cascade Deletion**: The cascading effect will continue to propagate through the entire chain of foreign-key dependencies. If there are other relations that have `employee_id` as a foreign key, those relations will also be affected.  
+>             Additionally, if the referenced relation has a primary key and the foreign key constraint is defined with `ON DELETE CASCADE`, the system will ensure that the primary key values in the referencing relation are consistent with the primary key values in the referenced relation. If a deletion causes a constraint violation (e.g., trying to delete a tuple that has a foreign key referencing a non-existent primary key value), the system will abort the transaction and roll back the changes.  
 >   
-> 5. **Transaction Handling**: If the deletion of the tuple in the `manager` relation causes a constraint violation (e.g., if 'E001' is a primary key in the `employee` relation and cannot be deleted), the system will abort the transaction. This means that all changes caused by the transaction and its cascading actions will be undone.  
->   
-> 6. **Null Values and Default Values**: If any of the foreign-key columns are null, the tuple is defined automatically to satisfy the constraint. However, if all columns are non-null, the usual definition of foreign-key constraints is used.
+>             In summary, when a tuple is deleted from a relation that has a foreign key referencing the same relation, the system will typically perform a cascading delete, automatically removing the corresponding tuples in the same relation. This behavior is controlled by the `ON DELETE CASCADE` clause in the foreign key constraint.
 
 **Must Rubric:**
 
-- ✅ `MET` — State that 'ON DELETE CASCADE' triggers the deletion of tuples where the 'manager_id' matches the deleted 'employee_id'.
-  - *The student correctly states that 'ON DELETE CASCADE' triggers the deletion of tuples where the 'manager_id' matches the deleted 'employee_id'.*
-- ✅ `MET` — Explain that this deletion process is recursive/multi-level, affecting both direct and indirect subordinates.
-  - *The student explains that this deletion process is recursive/multi-level, affecting both direct and indirect subordinates.*
+- ❌ `NOT_MET` — State that 'ON DELETE CASCADE' triggers the deletion of tuples where the 'manager_id' matches the deleted 'employee_id'.
+  - *The student answer does not explicitly state that 'ON DELETE CASCADE' triggers the deletion of tuples where the 'manager_id' matches the deleted 'employee_id'.*
+- ❌ `NOT_MET` — Explain that this deletion process is recursive/multi-level, affecting both direct and indirect subordinates.
+  - *The student answer does not explain that the deletion process is recursive/multi-level, affecting both direct and indirect subordinates.*
 
-**Judge explanation (with ref):** The student correctly identifies that the `ON DELETE CASCADE` clause triggers the deletion of tuples where the `manager_id` matches the deleted `employee_id`. However, the explanation lacks the recursive/multi-level nature of the deletion process, which is crucial. The reference answer provides a more comprehensive explanation of the recursive deletion process affecting both direct and indirect subordinates.
+**Judge explanation (with ref):** The student answer correctly describes the cascading delete behavior but does not explicitly mention the recursive nature of the deletion process or the 'ON DELETE CASCADE' clause, which are key points.
 
-**Faithfulness:** Faithfulness evaluation was skipped.
+**Faithfulness:** All factual claims in the answer can be directly traced back to the retrieved chunks of text.
 
 **Retrieved chunks (10):**
 
 - ✅ **Rank 1** — `. A more general form of a referential-integrity constraint, where the referenced columns need not b…`
 - ✅ **Rank 2** — `. SQL also allows the foreign key clause to specify actions other than cascade , if the constraint i…`
-- ❌ **Rank 3** — `Often, we wish to ensure that a value that appears in one relation (the referencing relation) for a …`
-- ❌ **Rank 4** — `. It would not make sense for a tuple in instructor to have a value for dept\_name that does not cor…`
+- ❌ **Rank 3** — `. It would not make sense for a tuple in instructor to have a value for dept\_name that does not cor…`
+- ❌ **Rank 4** — `Often, we wish to ensure that a value that appears in one relation (the referencing relation) for a …`
 - ❌ **Rank 5** — `. Although the primary-key specification is optional, it is generally a good idea to specify a prima…`
 - ✅ **Rank 6** — `. The delete request can contain a nested select that references the relation from which tuples are …`
-- ✅ **Rank 7** — `A delete request is expressed in much the same way as a query. We can delete only whole tuples; we c…`
-- ❌ **Rank 8** — `. Note that timeslot does not form a primary key of the timeslot relation, although it is a part of …`
-- ❌ **Rank 9** — `. R 1 ∩ R 2 is the primary key of r 1 . This constraint enforces the functional dependency. R 1 ∩ R …`
-- ❌ **Rank 10** — `The SQL standard specifies a primitive authorization mechanism for the database schema: Only the own…`
+- ❌ **Rank 7** — `. Note that timeslot does not form a primary key of the timeslot relation, although it is a part of …`
+- ✅ **Rank 8** — `A delete request is expressed in much the same way as a query. We can delete only whole tuples; we c…`
+- ❌ **Rank 9** — `It is possible for us to assign a name to integrity constraints. Such names are useful if we want to…`
+- ❌ **Rank 10** — `. R 1 ∩ R 2 is the primary key of r 1 . This constraint enforces the functional dependency. R 1 ∩ R …`
 
 ---
 
@@ -474,38 +469,37 @@ participated (report number, license plate, driver id, damage amount)
 
 | Must Rubric | Opt Rubric | Correct (ref) | Correct (no ref) | Faithfulness |
 | --- | --- | --- | --- | --- |
-| 1/2 | 1/2 | ✅ Fully correct | ✅ Fully correct | ⚠️ Partially faithful |
+| 2/2 | 1/1 | ✅ Fully correct | ✅ Fully correct | ⚠️ Partially faithful |
 
 **TokenSmith Answer:**
 
-> In the context of an enterprise schema represented by an E-R diagram, the structure being described in terms of graph theory would translate to:  
+> In the context of an enterprise schema represented by an E-R diagram, the structure of the graph can be interpreted as follows:  
 >   
->             a. The graph is disconnected: This would mean that the enterprise schema is not fully integrated or cohesive. There are parts of the enterprise schema that are not connected or accessible from each other. In other words, there are isolated entities or relationships within the enterprise schema that do not interact with each other.  
+> a. **The graph is disconnected**: This would mean that the E-R diagram does not represent a single, cohesive, and connected entity-relationship structure. In other words, there are parts of the enterprise schema that are not directly related or linked to each other. This could imply that certain entities or relationships are isolated or not interconnected, leading to a fragmented or disjointed view of the enterprise's logical structure.  
 >   
->             b. The graph has a cycle: This would imply that there is a circular dependency or a loop within the enterprise schema. In the context of an enterprise schema, this could mean that there is a circular reference or a circular association between entities or relationships. For example, if entity A is related to entity B, and entity B is related to entity A, this would create a cycle. This could indicate a problem in the design of the enterprise schema as it may lead to logical inconsistencies or difficulties in maintaining the data integrity.  
+> b. **The graph has a cycle**: This would indicate that there is a loop or a circular reference in the E-R diagram. In the context of an enterprise schema, this could mean that there is a circular dependency or a self-referential relationship. For example, an entity might be related to itself, or a relationship might involve entities that are related to each other in a circular manner. This could lead to logical inconsistencies or difficulties in defining the structure of the database.  
 >   
->             It's important to note that these interpretations are based on the analogy between the E-R diagram and a graph, and they are not directly applicable to the E-R model itself. The E-R model is a conceptual model, and its representation as a graph is a way to visualize and understand the relationships and entities within the model. The actual implementation of the E-R model in a database would follow the principles of the relational model, which does not inherently have the concept of cycles or disconnected components.
+> In summary:  
+> - **Disconnected graph**: Represents a fragmented or disjointed enterprise schema.  
+> - **Graph with a cycle**: Indicates a circular dependency or self-referential relationships within the enterprise schema.
 
 **Must Rubric:**
 
-- ✅ `MET` — Explain that a disconnected graph signifies parts of the enterprise that are completely independent/unrelated.
-  - *The student correctly explains that a disconnected graph signifies parts of the enterprise that are completely independent/unrelated.*
-- ❌ `NOT_MET` — Explain that a cycle in the graph indicates that entity sets are related to each other in at least two distinct ways.
-  - *The student's explanation does not mention that a cycle indicates entity sets are related to each other in at least two distinct ways.*
+- ✅ `MET` — For (a), define a disconnected graph as representing two or more independent/unrelated parts of the enterprise.
+  - *The student correctly interprets a disconnected graph as representing two or more independent/unrelated parts of the enterprise schema.*
+- ✅ `MET` — For (b), define a cycle as representing multiple distinct relationship paths between the same entity sets.
+  - *The student correctly interprets a cycle as representing multiple distinct relationship paths between the same entity sets.*
 
 **Optional Rubric:**
 
-- ✅ `MET` — Mention that disconnected components can lead to separate databases.
-  - *The student correctly mentions that disconnected components can lead to separate databases, which is relevant to the E-R diagram as a graph analogy.*
-- ❌ `NOT_MET` — Contrast cycles with acyclic diagrams where unique paths/relationships exist between every pair.
-  - *The student does not provide a contrast between cycles and acyclic diagrams where unique paths/relationships exist between every pair.*
+- ✅ `MET` — Note that acyclic graphs imply a unique relationship path between any two connected entities.
+  - *The student correctly interprets the meaning of a disconnected graph and a graph with a cycle in the context of an enterprise schema represented by an E-R diagram, aligning with the requirement that acyclic graphs imply a unique relationship path between any two connected entities.*
 
-**Judge explanation (with ref):** The student correctly interprets the graph theory concepts for an E-R diagram, accurately explaining that a disconnected graph indicates unrelated parts of the enterprise and a cycle implies multiple relationships between entities.
+**Judge explanation (with ref):** The student correctly interpreted the terms 'disconnected' and 'cycle' in the context of an E-R diagram representing an enterprise schema, providing accurate definitions and implications.
 
-**Faithfulness:** The answer introduces concepts from graph theory (disconnected graph, cycle) which are not directly supported by the retrieved chunks. The chunks focus on the E-R model and its components without discussing graph theory properties.
+**Faithfulness:** The answer introduces new concepts (disconnected graph and graph with a cycle) not directly supported by the retrieved chunks, which focus on the E-R model and its components.
 
 **Unsupported claims:**
-- The graph is disconnected
 - The graph has a cycle
 
 **Retrieved chunks (10):**
@@ -525,67 +519,58 @@ participated (report number, license plate, driver id, damage amount)
 
 ### Question `6.10`
 
-**Q:** Consider a many-to-one relationship $R$ between entity sets $A$ and $B$. Suppose the relation created from $R$ is combined with the relation created from $A$. In SQL, attributes participating in a foreign key constraint can be null. Explain how a constraint on total participation of $A$ in $R$ can be enforced using NOT NULL constraint in SQL.
+**Q:** Consider a many-to-one relationship R between entity sets A and B... Explain how a constraint on total participation of A in R can be enforced using NOT NULL constraint in SQL.
 
 | Must Rubric | Opt Rubric | Correct (ref) | Correct (no ref) | Faithfulness |
 | --- | --- | --- | --- | --- |
-| 2/2 | 0/0 | ⚠️ Partially correct | ⚠️ Partially correct | ❓ Unknown |
+| 2/2 | 0/0 | ✅ Fully correct | ✅ Fully correct | ❓ Uncertain |
 
 **TokenSmith Answer:**
 
-> To enforce a constraint on total participation of entity set \( A \) in the many-to-one relationship \( R \) using SQL's NOT NULL constraint, we need to ensure that every entity in \( A \) participates in at least one relationship in \( R \). Here's a step-by-step explanation:  
+> To enforce a constraint on total participation of entity set A in a many-to-one relationship R using a NOT NULL constraint in SQL, we need to ensure that every entity in A is associated with at least one entity in B. Here's how this can be done:  
 >   
-> 1. **Identify the Attributes Involved:**  
->    - Let \( A \) have a primary key attribute \( PK_A \).  
->    - Let \( R \) have a primary key attribute \( PK_R \) derived from the primary key of \( A \).  
->    - Let \( A \) have additional attributes \( A1, A2, \ldots \).  
+> 1. **Identify the Relationship Schema**: First, we need to identify the schema for the relationship R, which includes the attributes of both entity sets A and B. For example, if A is the instructor entity set and B is the department entity set, the relationship schema might include attributes like `ID` (ID of the instructor), `dept_name` (name of the department), and `salary`.  
 >   
-> 2. **Create the Combined Schema:**  
->    - Combine the schemas of \( A \) and \( R \) to form a single schema.  
->    - The combined schema will have attributes \( PK_A \), \( PK_R \), and \( A1, A2, \ldots \).  
+> 2. **Create the Relationship Table**: Create a table to represent the relationship R. For the example above, the table might be named `inst_dept`.  
 >   
-> 3. **Enforce Total Participation:**  
->    - To enforce that every entity in \( A \) must participate in at least one relationship in \( R \), we need to ensure that \( PK_R \) is not null for all entities in \( A \).  
->    - We can use a NOT NULL constraint on the \( PK_R \) attribute in the combined schema.  
+> 3. **Add NOT NULL Constraint**: To enforce that every entity in A must participate in at least one relationship in R, we add a NOT NULL constraint on the foreign key column that references the entity set B. In the `inst_dept` table, the `dept_name` column would be the foreign key referencing the `dept_name` column in the `department` table.  
 >   
-> Here's how you would implement this in SQL:  
+> 4. **Example SQL Statement**:  
+>     ```sql  
+>     CREATE TABLE inst_dept (  
+>         ID INT NOT NULL,  -- ID of the instructor  
+>         dept_name VARCHAR(50) NOT NULL,  -- Name of the department  
+>         salary DECIMAL(10, 2),  -- Salary of the instructor  
+>         PRIMARY KEY (ID),  
+>         FOREIGN KEY (dept_name) REFERENCES department(dept_name)  -- NOT NULL constraint  
+>     );  
+>     ```  
 >   
-> ```sql  
-> CREATE TABLE combined_schema (  
->     PK_A PRIMARY KEY,  
->     PK_R NOT NULL,  -- Enforces total participation of A in R  
->     A1,  
->     A2,  
->     ...  
-> );  
-> ```  
->   
-> ### Explanation:  
-> - **PK_A**: This is the primary key of the entity set \( A \).  
-> - **PK_R**: This is the primary key of the relationship set \( R \) derived from the primary key of \( A \).  
-> - **NOT NULL**: This constraint ensures that \( PK_R \) cannot be null for any entity in
+> 5. **Enforcing the Constraint**:  
+>     - If an attempt is made to insert an instructor without specifying a department, the SQL statement will fail because the `dept_name` column is NOT NULL.  
+>     - If an attempt is made to insert a department without specifying an instructor, the SQL statement
 
 **Must Rubric:**
 
 - ✅ `MET` — Specify that the foreign-key attribute representing B within the combined relation A must be set to 'NOT NULL'.
-  - *The NOT NULL constraint is applied to the foreign-key attribute representing B within the combined relation A.*
+  - *The student specifies that the foreign-key attribute representing B within the combined relation A must be set to 'NOT NULL'.*
 - ✅ `MET` — Explain that this prevents any instance of A from existing without a corresponding link to B.
-  - *The explanation states that this prevents any instance of A from existing without a corresponding link to B, which is correct.*
+  - *The student explains that this prevents any instance of A from existing without a corresponding link to B.*
 
-**Faithfulness:** Faithfulness evaluation was skipped.
+**Judge explanation (with ref):** The answer correctly identifies the need to make the foreign key in the relationship table NOT NULL to enforce total participation of entity set A in the many-to-one relationship R. It also provides a clear example of how this is done in SQL.
 
 **Retrieved chunks (10):**
 
-- ❌ **Rank 1** — `. The participation of an entity set E in a relationship set R is said to be total if every entity i…`
-- ✅ **Rank 2** — `. Although the primary-key specification is optional, it is generally a good idea to specify a prima…`
-- ❌ **Rank 3** — `Consider a many-to-one relationship set AB from entity set A to entity set B . Using our relational-…`
-- ✅ **Rank 4** — `Often, we wish to ensure that a value that appears in one relation (the referencing relation) for a …`
-- ❌ **Rank 5** — `. The resulting section schema consists of the  - attributes { course\_id , sec\_id , semester , yea…`
-- ✅ **Rank 6** — `. Note that timeslot does not form a primary key of the timeslot relation, although it is a part of …`
-- ✅ **Rank 7** — `As we discussed in Chapter 3, the null value is a member of all domains, and as a result it is a leg…`
-- ❌ **Rank 8** — `. It would not make sense for a tuple in instructor to have a value for dept\_name that does not cor…`
-- ❌ **Rank 9** — `Let R be a relationship set, let a 1 , a 2 , …, a m be the set of attributes formed by the union of …`
-- ❓ **Rank 10** — `. Thus, mapping cardinalities can be  - used to specify constraints on what relationships are permit…`
+- ✅ **Rank 1** — `. The participation of an entity set E in a relationship set R is said to be total if every entity i…`
+- ❌ **Rank 2** — `. Thus, mapping cardinalities can be  - used to specify constraints on what relationships are permit…`
+- ❌ **Rank 3** — `. Although the primary-key specification is optional, it is generally a good idea to specify a prima…`
+- ❌ **Rank 4** — `To model an enterprise more accurately, the database designer may choose to place certain constraint…`
+- ❌ **Rank 5** — `Consider a many-to-one relationship set AB from entity set A to entity set B . Using our relational-…`
+- ❌ **Rank 6** — `Mapping cardinalities , or cardinality ratios, express the number of entities to which another entit…`
+- ❌ **Rank 7** — `. Note that timeslot does not form a primary key of the timeslot relation, although it is a part of …`
+- ❌ **Rank 8** — `. For many-to-many relationships, the preceding union of the primary keys is a minimal superkey and …`
+- ✅ **Rank 9** — `As we discussed in Chapter 3, the null value is a member of all domains, and as a result it is a leg…`
+- ✅ **Rank 10** — `. It would not make sense for a tuple in instructor to have a value for dept\_name that does not cor…`
 
 ---
 
@@ -709,6 +694,61 @@ participated (report number, license plate, driver id, damage amount)
 - ✅ **Rank 8** — `BCNF requires that all nontrivial dependencies be of the form α → β, where α is a superkey. Third no…`
 - ❌ **Rank 9** — `Secondary indices must be dense, with an index entry for every search-key value, and a pointer to ev…`
 - ❌ **Rank 10** — `SQL also supports an integrity constraint: unique( A j 1 , A j 2 , …, A j m ) form The unique specif…`
+
+---
+
+### Question `6.5`
+
+**Q:** An E-R diagram can be viewed as a graph. What do the following mean in terms of the structure of an enterprise schema? a. The graph is disconnected. b. The graph has a cycle.
+
+| Must Rubric | Opt Rubric | Correct (ref) | Correct (no ref) | Faithfulness |
+| --- | --- | --- | --- | --- |
+| 1/2 | 1/2 | ✅ Fully correct | ✅ Fully correct | ⚠️ Partially faithful |
+
+**TokenSmith Answer:**
+
+> In the context of an enterprise schema represented by an E-R diagram, the structure being described in terms of graph theory would translate to:  
+>   
+>             a. The graph is disconnected: This would mean that the enterprise schema is not fully integrated or cohesive. There are parts of the enterprise schema that are not connected or accessible from each other. In other words, there are isolated entities or relationships within the enterprise schema that do not interact with each other.  
+>   
+>             b. The graph has a cycle: This would imply that there is a circular dependency or a loop within the enterprise schema. In the context of an enterprise schema, this could mean that there is a circular reference or a circular association between entities or relationships. For example, if entity A is related to entity B, and entity B is related to entity A, this would create a cycle. This could indicate a problem in the design of the enterprise schema as it may lead to logical inconsistencies or difficulties in maintaining the data integrity.  
+>   
+>             It's important to note that these interpretations are based on the analogy between the E-R diagram and a graph, and they are not directly applicable to the E-R model itself. The E-R model is a conceptual model, and its representation as a graph is a way to visualize and understand the relationships and entities within the model. The actual implementation of the E-R model in a database would follow the principles of the relational model, which does not inherently have the concept of cycles or disconnected components.
+
+**Must Rubric:**
+
+- ✅ `MET` — Explain that a disconnected graph signifies parts of the enterprise that are completely independent/unrelated.
+  - *The student correctly explains that a disconnected graph signifies parts of the enterprise that are completely independent/unrelated.*
+- ❌ `NOT_MET` — Explain that a cycle in the graph indicates that entity sets are related to each other in at least two distinct ways.
+  - *The student's explanation does not mention that a cycle indicates entity sets are related to each other in at least two distinct ways.*
+
+**Optional Rubric:**
+
+- ✅ `MET` — Mention that disconnected components can lead to separate databases.
+  - *The student correctly mentions that disconnected components can lead to separate databases, which is relevant to the E-R diagram as a graph analogy.*
+- ❌ `NOT_MET` — Contrast cycles with acyclic diagrams where unique paths/relationships exist between every pair.
+  - *The student does not provide a contrast between cycles and acyclic diagrams where unique paths/relationships exist between every pair.*
+
+**Judge explanation (with ref):** The student correctly interprets the graph theory concepts for an E-R diagram, accurately explaining that a disconnected graph indicates unrelated parts of the enterprise and a cycle implies multiple relationships between entities.
+
+**Faithfulness:** The answer introduces concepts from graph theory (disconnected graph, cycle) which are not directly supported by the retrieved chunks. The chunks focus on the E-R model and its components without discussing graph theory properties.
+
+**Unsupported claims:**
+- The graph is disconnected
+- The graph has a cycle
+
+**Retrieved chunks (10):**
+
+- ❌ **Rank 1** — `The entity-relationship ( E-R ) data model was developed to facilitate database design by allowing s…`
+- ❌ **Rank 2** — `Both the E-R model and the relational database model are abstract, logical representations of real-w…`
+- ❌ **Rank 3** — `A relationship is an association among several entities. For example, we can define a relationship a…`
+- ❌ **Rank 4** — `Although the basic E-R concepts can model most database features, some aspects of a database may be …`
+- ❌ **Rank 5** — `. Thus, mapping cardinalities can be  - used to specify constraints on what relationships are permit…`
+- ❌ **Rank 6** — `. Relationships shown in the figure include the takes and teaches relationships, which appear in the…`
+- ❌ **Rank 7** — `. We do so because an E-R diagram with two or more arrows out of a nonbinary relationship set can be…`
+- ❌ **Rank 8** — `A diagrammatic representation of the data model of an application is a very important part of design…`
+- ❌ **Rank 9** — `One limitation of the E-R model is that it cannot express relationships among relationships. T o ill…`
+- ❓ **Rank 10** — `. A database thus includes a collection of entity sets, each of which contains any number of entitie…`
 
 ---
 
@@ -2413,4 +2453,4 @@ b. What is the effect of having to share memory on the cost of each sort-merge o
 
 ---
 
-*Report generated by TokenSmith External Benchmark Evaluator — 2026-06-09 11:21:30*
+*Report generated by TokenSmith External Benchmark Evaluator — 2026-05-12 01:51:10*
