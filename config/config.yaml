@@ -1,6 +1,6 @@
 # embed_model: "models/embedders/Qwen3-Embedding-4B-Q5_K_M.gguf"
 embed_model: "models/embedders/mxbai-embed-large-v1.Q4_K_M.gguf"
-embedding_model_context_window: 1024
+embedding_model_context_window: 4096
 
 top_k: 10
 num_candidates: 50
@@ -11,7 +11,7 @@ max_gen_tokens: 400
 chunk_mode: "recursive_sections"
 gen_model: "models/generators/qwen2.5-3b-instruct-q8_0.gguf"
 chunk_size_in_chars: 2000
-chunk_overlap: 300
+chunk_overlap: 500
 use_hyde: false
 hyde_max_tokens: 300
 use_indexed_chunks: false
@@ -25,6 +25,6 @@ semantic_cache_bi_encoder_threshold: 0.9
 semantic_cache_cross_encoder_threshold: 0.99
 enable_topic_extraction: false
 enable_clustering: true
-n_clusters: 20
+n_clusters: 80
 n_probe_clusters: 4
 extracted_index_path: "data/extracted_index.json"

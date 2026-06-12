@@ -10,6 +10,7 @@ from __future__ import annotations
 import pathlib
 import os
 import pickle
+import re
 import time
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional, Dict, Any
@@ -396,44 +397,78 @@ class ClusteredFAISSRetriever(Retriever):
         # print(f"[ClusteredFAISSRetriever] Query  vector= '{q_vec[0][:50]}...'")
         embed_time = time.time() - embed_start
         
-        # Step 2: Find nearest cluster(s) using centroids
-        centroid_start = time.time()
-        # Compute distances to centroids
-        dists_to_centroids = self.centroids @ q_vec.T  # (n_clusters, 1)
-        dists_to_centroids = np.squeeze(dists_to_centroids)  # (n_clusters,)
-        
-        # Get top n_probe_clusters nearest clusters
-        top_cluster_indices = np.argsort(-dists_to_centroids)[:self.n_probe_clusters]
-        centroid_time = time.time() - centroid_start
-        
-        print(f"[ClusteredFAISSRetriever] Querying '{query[:50]}...'")
-        print(f"[ClusteredFAISSRetriever] Top {self.n_probe_clusters} clusters to search: {top_cluster_indices}")
-        
         scores = {}
         self.chunk_cluster_map = {}  # Track which cluster each chunk came from
         search_time = 0
         
-        for cluster_idx in top_cluster_indices:
-            nearest_cluster_chunks = self.cluster_chunks.get(int(cluster_idx), [])
-            if not nearest_cluster_chunks:
-                continue   # No chunks in this cluster, skip
+        # --- STAGE 1: Multi-Hop Expansion with ALL chunks from clusters ---
+        max_hops = 6
+        current_q_vec = q_vec
+        STOP_WORDS = {'the','a','and','is','in','it','of','to','for','with','on','this','that','by','an','from','as','are','was'}
+        
+        print(f"[ClusteredFAISSRetriever] Querying '{query[:50]}...'")
+        
+        for hop in range(max_hops):
+            # Step 2: Find nearest cluster(s) using centroids (recalculate each hop with refined query)
+            centroid_start = time.time()
+            # Compute distances to centroids
+            dists_to_centroids = self.centroids @ current_q_vec.T  # (n_clusters, 1)
+            dists_to_centroids = np.squeeze(dists_to_centroids)  # (n_clusters,)
             
-            # Step 3: Use FAISS to search only within this cluster's chunks
-            cluster_search_start = time.time()
-            clusterIndex = self.cluster_indices[cluster_idx]
-            distances, indices = clusterIndex.search(q_vec, min(pool_size, len(nearest_cluster_chunks)))
-            search_time += time.time() - cluster_search_start
-            # Map local cluster indices back to global chunk indices
-            for local_idx, dist in zip(indices[0], distances[0]):
-                if local_idx < len(nearest_cluster_chunks):
-                    global_chunk_idx = nearest_cluster_chunks[local_idx]
-                    # print(f"[ClusteredFAISSRetriever] Cluster {cluster_idx} local idx {local_idx} maps to global chunk idx {global_chunk_idx} with distance {dist}")
-                    if 0 <= global_chunk_idx < len(chunks):
-                        score = 1.0 / (1.0 + dist)  # Normalize to match FAISSRetriever (0-1 range)
-                        scores[global_chunk_idx] = score
-                        self.chunk_cluster_map[global_chunk_idx] = int(cluster_idx)  # Tag chunk with cluster
+            # Get top n_probe_clusters nearest clusters
+            top_cluster_indices = np.argsort(-dists_to_centroids)[:self.n_probe_clusters]
+            centroid_time = time.time() - centroid_start
+            
+            print(f"[ClusteredFAISSRetriever] Hop {hop+1}/{max_hops} - clusters: {top_cluster_indices}")
+            hop_found_new = False
+            
+            for c_idx in top_cluster_indices:
+                chunks_in_c = self.cluster_chunks.get(int(c_idx), [])
+                if not chunks_in_c:
+                    continue
+                
+                # Retrieve ALL chunks from this cluster, not just the best one
+                start_s = time.time()
+                k_request = min(pool_size, len(chunks_in_c))
+                dists, idxs = self.cluster_indices[c_idx].search(current_q_vec, k_request)
+                search_time += time.time() - start_s
+                
+                # Add ALL results from this cluster
+                for local_idx, dist in zip(idxs[0], dists[0]):
+                    if local_idx < len(chunks_in_c):
+                        g_idx = chunks_in_c[local_idx]
+                        if 0 <= g_idx < len(chunks):
+                            score = 1.0 / (1.0 + dist)  # Convert distance to score
+                            if g_idx not in scores:  # Keep first (best) score
+                                scores[g_idx] = score
+                                self.chunk_cluster_map[g_idx] = int(c_idx)
+                                hop_found_new = True
+            
+            if not hop_found_new or hop == max_hops - 1:
+                break
+            
+            # Hop Update: use top chunk's keywords for next hop query
+            if scores:
+                best_chunk_idx = max(scores, key=scores.get)
+                best_txt = chunks[best_chunk_idx]
+                best_txt = best_txt if isinstance(best_txt, str) else str(best_txt)
+                
+                # Extract keywords for refinement
+                kws = [w for w in re.findall(r'\b[a-zA-Z]{4,}\b', best_txt.lower()) if w not in STOP_WORDS]
+                
+                if len(kws) >= 3:
+                    # Update query vector with top keywords for next hop
+                    current_q_vec += self.embedder.encode([" ".join(kws[:])]).astype("float32")
+                else:
+                    break  # Not enough keywords to continue
         
         elapsed = time.time() - start_time
         print(f"[ClusteredFAISSRetriever] Retrieved {len(scores)} unique chunks from {len(top_cluster_indices)} clusters")
-        print(f"[ClusteredFAISSRetriever] Total time: {elapsed*1000:.2f}ms (embed: {embed_time*1000:.2f}ms, centroid: {centroid_time*1000:.2f}ms, search: {search_time*1000:.2f}ms)\"")
+        
+        # Return only top 100 chunks by score
+        topkchunks = 80
+        if len(scores) > topkchunks:
+            scores = dict(sorted(scores.items(), key=lambda item: item[1], reverse=True)[:topkchunks]) 
+        print(f"[ClusteredFAISSRetriever] Returning top {len(scores)} chunks after filtering")
+        print(f"[ClusteredFAISSRetriever] Total time: {elapsed*1000:.2f}ms (embed: {embed_time*1000:.2f}ms, centroid: {centroid_time*1000:.2f}ms, search: {search_time*1000:.2f}ms)")
         return scores

@@ -55,6 +55,7 @@ import time
 from argparse import Namespace
 from copy import deepcopy
 from typing import Optional
+from runner import convert_numpy_types
 
 # ── Project root on path ──────────────────────────────────────────────────────
 _PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -78,7 +79,7 @@ from src.instrumentation.logging import get_logger
 from src.main import get_answer
 from src.ranking.ranker import EnsembleRanker
 from src.retriever import (
-    BM25Retriever, FAISSRetriever, IndexKeywordRetriever, load_artifacts,
+    BM25Retriever, FAISSRetriever, IndexKeywordRetriever, ClusteredFAISSRetriever, load_artifacts, load_full_artifacts
 )
 from src.benchmark_eval.judge_client import JudgeClient, safe_verdict
 
@@ -138,10 +139,25 @@ def load_previous_ts_results(run_label: str) -> dict[str, dict]:
 def load_ts_artifacts(cfg: RAGConfig) -> dict:
     try:
         artifacts_dir = cfg.get_artifacts_directory()
-        faiss_idx, bm25_idx, chunks, sources, meta = load_artifacts(
+        
+        faiss_idx, bm25_idx, chunks, sources, meta, cluster_data = load_full_artifacts(
             artifacts_dir, INDEX_PREFIX
         )
-        retrievers = [FAISSRetriever(faiss_idx, cfg.embed_model), BM25Retriever(bm25_idx)]
+        print(f"Len of proble clsuters: {cfg.n_probe_clusters}")
+        faiss_retriever = ClusteredFAISSRetriever(
+                cluster_data=cluster_data,
+                embed_model=cfg.embed_model,
+                n_probe_clusters=cfg.n_probe_clusters
+        )
+        retrievers = [
+            faiss_retriever, BM25Retriever(bm25_idx)
+        ]
+        
+        # faiss_idx, bm25_idx, chunks, sources, meta = load_artifacts(
+        #     artifacts_dir, INDEX_PREFIX
+        # )
+        
+        # retrievers = [FAISSRetriever(faiss_idx, cfg.embed_model), BM25Retriever(bm25_idx)]
         if cfg.ranker_weights.get("index_keywords", 0) > 0:
             retrievers.append(
                 IndexKeywordRetriever(cfg.extracted_index_path, cfg.page_to_chunk_map_path)
@@ -985,7 +1001,8 @@ def run_pipeline(args: argparse.Namespace) -> None:
             "config_state":     cfg.get_config_state(),
             "timestamp":        time.strftime("%Y-%m-%dT%H:%M:%S"),
         }
-        results.append(rec)
+        # results.append(rec)
+        results.append(convert_numpy_types(rec))
         done_ids.add(qid)
 
         # Save after each question — crash safe

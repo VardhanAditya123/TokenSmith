@@ -764,37 +764,42 @@
     "judgements": {
       "must_rubric_satisfaction": [
         {
-          "criterion": "For (a), define a disconnected graph as representing two or more independent/unrelated parts of the enterprise.",
+          "criterion": "Explain that a disconnected graph signifies parts of the enterprise that are completely independent/unrelated.",
           "verdict": "met",
-          "reason": "The student correctly interprets a disconnected graph as representing two or more independent/unrelated parts of the enterprise schema."
+          "reason": "The student correctly explains that a disconnected graph signifies parts of the enterprise that are completely independent/unrelated."
         },
         {
-          "criterion": "For (b), define a cycle as representing multiple distinct relationship paths between the same entity sets.",
-          "verdict": "met",
-          "reason": "The student correctly interprets a cycle as representing multiple distinct relationship paths between the same entity sets."
+          "criterion": "Explain that a cycle in the graph indicates that entity sets are related to each other in at least two distinct ways.",
+          "verdict": "not_met",
+          "reason": "The student's explanation does not mention that a cycle indicates entity sets are related to each other in at least two distinct ways."
         }
       ],
       "optional_rubric_satisfaction": [
         {
-          "criterion": "Note that acyclic graphs imply a unique relationship path between any two connected entities.",
+          "criterion": "Mention that disconnected components can lead to separate databases.",
           "verdict": "met",
-          "reason": "The student correctly interprets the meaning of a disconnected graph and a graph with a cycle in the context of an enterprise schema represented by an E-R diagram, aligning with the requirement that acyclic graphs imply a unique relationship path between any two connected entities."
+          "reason": "The student correctly mentions that disconnected components can lead to separate databases, which is relevant to the E-R diagram as a graph analogy."
+        },
+        {
+          "criterion": "Contrast cycles with acyclic diagrams where unique paths/relationships exist between every pair.",
+          "verdict": "not_met",
+          "reason": "The student does not provide a contrast between cycles and acyclic diagrams where unique paths/relationships exist between every pair."
         }
       ],
       "answer_correctness": {
         "without_reference": {
           "score": 1,
-          "explanation": "The student correctly interpreted the terms 'disconnected' and 'cycle' in the context of an E-R diagram representing an enterprise schema, providing accurate definitions and implications.",
+          "explanation": "The student correctly interprets the graph theory concepts for an E-R diagram, accurately explaining that a disconnected graph means parts of the enterprise schema are independent and a cycle indicates circular dependencies.",
           "strengths": [
-            "Clear and precise definitions for both terms"
+            "Clear and accurate explanations for both concepts"
           ],
           "weaknesses": []
         },
         "with_reference": {
           "score": 1,
-          "explanation": "The student correctly interpreted the terms 'disconnected' and 'cycle' in the context of an E-R diagram representing an enterprise schema, providing accurate definitions and implications.",
+          "explanation": "The student correctly interprets the graph theory concepts for an E-R diagram, accurately explaining that a disconnected graph indicates unrelated parts of the enterprise and a cycle implies multiple relationships between entities.",
           "strengths": [
-            "Clear and precise definitions for both terms"
+            "Clear and accurate explanations for both parts of the question"
           ],
           "weaknesses": []
         }
@@ -867,18 +872,19 @@
       "faithfulness": {
         "verdict": "partially_faithful",
         "unsupported_claims": [
+          "The graph is disconnected",
           "The graph has a cycle"
         ],
-        "explanation": "The answer introduces new concepts (disconnected graph and graph with a cycle) not directly supported by the retrieved chunks, which focus on the E-R model and its components."
+        "explanation": "The answer introduces concepts from graph theory (disconnected graph, cycle) which are not directly supported by the retrieved chunks. The chunks focus on the E-R model and its components without discussing graph theory properties."
       }
     },
     "summary": {
-      "must_rubric_met_rate": 1.0,
-      "must_rubric_met_count": 2,
+      "must_rubric_met_rate": 0.5,
+      "must_rubric_met_count": 1,
       "must_rubric_total": 2,
-      "opt_rubric_met_rate": 1.0,
+      "opt_rubric_met_rate": 0.5,
       "opt_rubric_met_count": 1,
-      "opt_rubric_total": 1,
+      "opt_rubric_total": 2,
       "correctness_with_ref": 1,
       "correctness_no_ref": 1,
       "faithfulness_verdict": "partially_faithful",
@@ -1265,139 +1271,6 @@
       "faithfulness_verdict": "uncertain",
       "faithfulness_score": null,
       "chunk_relevance_rate": 0.4444444444444444
-    }
-  },
-  {
-    "id": "6.5",
-    "judgements": {
-      "must_rubric_satisfaction": [
-        {
-          "criterion": "Explain that a disconnected graph signifies parts of the enterprise that are completely independent/unrelated.",
-          "verdict": "met",
-          "reason": "The student correctly explains that a disconnected graph signifies parts of the enterprise that are completely independent/unrelated."
-        },
-        {
-          "criterion": "Explain that a cycle in the graph indicates that entity sets are related to each other in at least two distinct ways.",
-          "verdict": "not_met",
-          "reason": "The student's explanation does not mention that a cycle indicates entity sets are related to each other in at least two distinct ways."
-        }
-      ],
-      "optional_rubric_satisfaction": [
-        {
-          "criterion": "Mention that disconnected components can lead to separate databases.",
-          "verdict": "met",
-          "reason": "The student correctly mentions that disconnected components can lead to separate databases, which is relevant to the E-R diagram as a graph analogy."
-        },
-        {
-          "criterion": "Contrast cycles with acyclic diagrams where unique paths/relationships exist between every pair.",
-          "verdict": "not_met",
-          "reason": "The student does not provide a contrast between cycles and acyclic diagrams where unique paths/relationships exist between every pair."
-        }
-      ],
-      "answer_correctness": {
-        "without_reference": {
-          "score": 1,
-          "explanation": "The student correctly interprets the graph theory concepts for an E-R diagram, accurately explaining that a disconnected graph means parts of the enterprise schema are independent and a cycle indicates circular dependencies.",
-          "strengths": [
-            "Clear and accurate explanations for both concepts"
-          ],
-          "weaknesses": []
-        },
-        "with_reference": {
-          "score": 1,
-          "explanation": "The student correctly interprets the graph theory concepts for an E-R diagram, accurately explaining that a disconnected graph indicates unrelated parts of the enterprise and a cycle implies multiple relationships between entities.",
-          "strengths": [
-            "Clear and accurate explanations for both parts of the question"
-          ],
-          "weaknesses": []
-        }
-      },
-      "chunk_relevance": {
-        "individual": [],
-        "group": [
-          {
-            "chunk_id": 294,
-            "rank": 1,
-            "verdict": "not_relevant",
-            "reason": "The chunk does not contain information about the structure of an enterprise schema or the meaning of disconnected or cyclic graphs in the context of E-R diagrams."
-          },
-          {
-            "chunk_id": 323,
-            "rank": 2,
-            "verdict": "not_relevant",
-            "reason": "The chunk does not contain information about the structure of an enterprise schema or the meaning of disconnected or cyclic graphs in the context of E-R diagrams."
-          },
-          {
-            "chunk_id": 298,
-            "rank": 3,
-            "verdict": "not_relevant",
-            "reason": "The chunk does not contain information about the structure of an enterprise schema or the meaning of disconnected or cyclic graphs in the context of E-R diagrams."
-          },
-          {
-            "chunk_id": 335,
-            "rank": 4,
-            "verdict": "not_relevant",
-            "reason": "The chunk does not contain information relevant to the question about E-R diagrams and graph structures in enterprise schemas."
-          },
-          {
-            "chunk_id": 307,
-            "rank": 5,
-            "verdict": "not_relevant",
-            "reason": "The chunk does not contain information relevant to the question about E-R diagrams and graph structures in enterprise schemas."
-          },
-          {
-            "chunk_id": 463,
-            "rank": 6,
-            "verdict": "not_relevant",
-            "reason": "The chunk does not contain information relevant to the question about E-R diagrams and graph structures in enterprise schemas."
-          },
-          {
-            "chunk_id": 314,
-            "rank": 7,
-            "verdict": "not_relevant",
-            "reason": "The chunk does not directly address the concepts of disconnected graphs or graphs with cycles in the context of an E-R diagram or enterprise schema."
-          },
-          {
-            "chunk_id": 358,
-            "rank": 8,
-            "verdict": "not_relevant",
-            "reason": "The chunk does not directly address the concepts of disconnected graphs or graphs with cycles in the context of an E-R diagram or enterprise schema."
-          },
-          {
-            "chunk_id": 345,
-            "rank": 9,
-            "verdict": "not_relevant",
-            "reason": "The chunk does not directly address the concepts of disconnected graphs or graphs with cycles in the context of an E-R diagram or enterprise schema."
-          },
-          {
-            "chunk_id": 297,
-            "rank": 10,
-            "verdict": "uncertain",
-            "reason": "The chunk provides information about E-R diagrams and entity sets but does not directly address the concepts of disconnected graphs or graphs with cycles in the context of enterprise schemas."
-          }
-        ]
-      },
-      "faithfulness": {
-        "verdict": "partially_faithful",
-        "unsupported_claims": [
-          "The graph is disconnected",
-          "The graph has a cycle"
-        ],
-        "explanation": "The answer introduces concepts from graph theory (disconnected graph, cycle) which are not directly supported by the retrieved chunks. The chunks focus on the E-R model and its components without discussing graph theory properties."
-      }
-    },
-    "summary": {
-      "must_rubric_met_rate": 0.5,
-      "must_rubric_met_count": 1,
-      "must_rubric_total": 2,
-      "opt_rubric_met_rate": 0.5,
-      "opt_rubric_met_count": 1,
-      "opt_rubric_total": 2,
-      "correctness_with_ref": 1,
-      "correctness_no_ref": 1,
-      "faithfulness_verdict": "partially_faithful",
-      "faithfulness_score": 0.5,
-      "chunk_relevance_rate": 0.0
     }
   },
   {

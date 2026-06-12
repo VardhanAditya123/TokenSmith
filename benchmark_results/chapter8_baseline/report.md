@@ -1,7 +1,7 @@
 # TokenSmith Benchmark Report
 
 **Run label:** `chapter8_baseline`  
-**Generated:** 2026-06-03 10:46:25  
+**Generated:** 2026-06-09 10:47:42  
 **QAC file:** `[PosixPath('synthetic_qac_data/manually_verified/Verified--chapter_08_qac_gemini.jsonl')]`  
 **Questions evaluated:** 11  
 **Judge model:** `N/A`  
@@ -14,12 +14,12 @@
 
 | Metric | Score | Plain English |
 | --- | --- | --- |
-| 🔍 Gold Chunk Coverage | 87.5% █████████░ | Retrieval is **excellent** — almost all key information was retrieved |
-| ✅ Answer Correctness (with ref) | 27.27% | **mixed** — many answers were only partially correct |
+| 🔍 Gold Chunk Coverage | 44.1% ████░░░░░░ | Retrieval is **moderate** — about half the key information was retrieved |
+| ✅ Answer Correctness (with ref) | 45.45% | **moderate** — answers were partially correct on average |
 | 📋 Rubric Satisfaction (individual mode) | 93.9% | 93.9% of rubric criteria were fully met |
-| 🎯 Retrieval Precision | 20.9% | 20.9% of retrieved chunks were useful |
+| 🎯 Retrieval Precision | 15.5% | 15.5% of retrieved chunks were useful |
 | 🔒 Answer Faithfulness | 100.0% | How often answers stuck to retrieved info |
-| 📝 BLEU vs Mock Answer | 0.0941 | N-gram overlap with the reference answer |
+| 📝 BLEU vs Mock Answer | 0.0547 | N-gram overlap with the reference answer |
 
 ---
 
@@ -74,18 +74,18 @@ The following TokenSmith settings were used for this benchmark run:
 
 | Metric | Value | Meaning |
 | --- | --- | --- |
-| Gold Chunk Coverage Rate | 87.5% | Fraction of required sentences found in retrieved chunks |
-| Perfect Coverage (100%) | 63.6% | Questions where ALL gold chunks were retrieved |
-| Retrieval Precision | 20.9% | Fraction of retrieved chunks that contained at least one gold chunk |
+| Gold Chunk Coverage Rate | 44.1% | Fraction of required sentences found in retrieved chunks |
+| Perfect Coverage (100%) | 18.2% | Questions where ALL gold chunks were retrieved |
+| Retrieval Precision | 15.5% | Fraction of retrieved chunks that contained at least one gold chunk |
 | Mean Retrieved Chunks | 10.00 | Average number of chunks TokenSmith retrieved per question |
 
 ### Retrieval by Difficulty
 
 | Difficulty | N | Coverage Rate | Perfect Coverage | Precision |
 | --- | --- | --- | --- | --- |
-| Easy | 4 | 81.7% | 50.0% | 15.0% |
-| Medium | 5 | 90.0% | 80.0% | 22.0% |
-| Hard | 2 | 92.9% | 50.0% | 30.0% |
+| Easy | 4 | 65.0% | 50.0% | 12.5% |
+| Medium | 5 | 25.0% | 0.0% | 18.0% |
+| Hard | 2 | 50.0% | 0.0% | 15.0% |
 
 > **Note on difficulty:** Easy questions require 1-3 specific sentences. Medium questions need 2-10 sentences, possibly spread across the chapter. Hard questions require multiple concepts and reasoning, and typically have more gold chunks spread further apart.
 
@@ -108,9 +108,9 @@ The rubric for each question specifies key points a correct answer must address.
 
 | Difficulty | N | Met Rate (Individual) | Met Rate (All) |
 | --- | --- | --- | --- |
-| Easy | 4 | 100.0% | 100.0% |
+| Easy | 4 | 83.3% | 83.3% |
 | Medium | 5 | 100.0% | 100.0% |
-| Hard | 2 | 66.7% | 66.7% |
+| Hard | 2 | 100.0% | 100.0% |
 
 ### Answer Correctness (-1 / 0 / 1)
 
@@ -120,10 +120,10 @@ The rubric for each question specifies key points a correct answer must address.
 
 | Score | Without Reference | With Reference |
 | --- | --- | --- |
-| ✅ 1 (Fully correct) | 6 (54.5%) | 5 (45.5%) |
-| ⚠️ 0 (Partially correct) | 5 (45.5%) | 4 (36.4%) |
-| ❌ -1 (Incorrect) | 0 (0.0%) | 2 (18.2%) |
-| Mean score | 0.55 | 0.27 |
+| ✅ 1 (Fully correct) | 8 (72.7%) | 7 (63.6%) |
+| ⚠️ 0 (Partially correct) | 1 (9.1%) | 2 (18.2%) |
+| ❌ -1 (Incorrect) | 2 (18.2%) | 2 (18.2%) |
+| Mean score | 0.55 | 0.45 |
 
 ### Rubric Coverage vs Correctness Score Examples
 
@@ -139,13 +139,13 @@ Rubric met rate: **100.0%** | Correctness: **✅ Fully correct**
 
 > The three key metrics often used to characterize Big Data and distinguish it from traditional relational databases are:  
 >   
-> 1. **Volume**: The amount of data to be stored and processed is much larger than traditional databases, including traditional parallel relational databases, were designed to handle.   
+> 1. **Volume**: The amount of data to be stored and processed is much larger than traditional databases, including traditional parallel relational databases, were designed to handle. Early generation parallel databases were designed to work on tens to a few hundreds of machines, whereas new applications require thousands of machines in parallel to store and process the data.  
 >   
-> 2. **Velocity**: The rate of arrival of data are much higher in today's networked world than in earlier days. Data management systems must be able to ingest and store data at very high rates, and many applications need data items to be processed as they arrive, to detect and respond quickly to certain events.  
+> 2. **Velocity**: The rate of arrival of data is much higher in today's networked world than in earlier days. Data management systems must be able to ingest and store data at very high rates. Many applications need data items to be processed as they arrive, to detect and respond quickly to certain events.   
 >   
-> 3. **Variety**: The data are characterized by their size, speed at which they are generated, and the variety of formats. This includes data that are not necessarily relational, such as semi-structured data, textual data, and graph data. The SQL query language is well suited to specifying a variety of queries on relational data, but many computations cannot be easily expressed in SQL or efficiently evaluated if represented using SQL.  
+> 3. **Variety**: The data types and formats are diverse, including semi-structured data, textual data, and graph data. Traditional relational databases and SQL are well-suited for relational data, but many computations cannot be easily expressed in SQL or efficiently evaluated if represented using SQL. Big Data applications often require processing of large volumes of text, image, and video data, which are not necessarily in relational form.  
 >   
-> <<<ANSWER>>>
+> <<<ANSWER>>
 
 **Rubric Breakdown:**
 
@@ -155,7 +155,7 @@ Rubric met rate: **100.0%** | Correctness: **✅ Fully correct**
 
 **Judge Explanation:**
 
-> The student correctly identifies and explains the three key metrics: Volume, Velocity, and Variety, matching the reference answer.
+> The student correctly identified and explained each of the three key metrics: Volume, Velocity, and Variety, matching the reference answer.
 
 #### ⚠️ High Rubric Coverage but Incorrect Answer
 
@@ -167,29 +167,29 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 
 **TokenSmith's Answer** *(full)*:
 
-> The Hadoop Distributed File System (HDFS) is a distributed file system designed to store large files across a cluster of computers. It is built on the architecture of the Google File System (GFS), which was developed in the early 2000s and widely used within Google. HDFS is now a widely used open-source implementation of a distributed file system.  
+>             The architecture of the Hadoop Distributed File System (HDFS) is designed to efficiently store large files across a large number of machines while maintaining a single-file-system view for clients. Here's a detailed breakdown of its architecture and the process for reading from and writing to a file:  
 >   
-> The core of HDFS is a server called the NameNode. All file system requests are sent to the NameNode. Here's a detailed breakdown of the architecture and the process for reading from and writing to a file:  
+> ### HDFS Architecture  
 >   
-> ### Architecture of HDFS  
+> 1. **Nodes (Machines)**: The nodes that store data blocks in HDFS are called **datanodes**. Each datanode stores a portion of the file system's data.  
 >   
-> 1. **NameNode**: This is the central server that manages the file system. It stores metadata about the files, including the list of blocks and the locations of these blocks on the DataNodes.  
+> 2. **Blocks**: Files are broken down into multiple **blocks**, typically ranging from 64 MB to 128 MB in size. Each block is assigned a unique identifier.  
 >   
-> 2. **DataNodes**: These are the worker nodes that store the actual data blocks. Each DataNode stores a portion of the file system's data and reports back to the NameNode about the blocks it stores.  
+> 3. **Metadata**: The file system metadata is partitioned across many nodes. This metadata includes information about the blocks, such as their locations on the datanodes. The metadata is stored at a single node called the **namenode**.  
 >   
-> ### Process for Reading from a File  
+> 4. **Replication**: Each file block is replicated across multiple datanodes (typically three). This replication ensures that the data remains accessible even if one or more datanodes fail.  
 >   
-> 1. **Client Request**: A client program sends a request to the NameNode to read a file. The request includes the file name (which can be a path, such as `/home/avi/book/ch10`).  
+> 5. **Namenode**: The namenode is the central management node of the HDFS. It stores the metadata and coordinates the storage of data blocks across the datanodes. The namenode is a single point of failure, and its performance can significantly impact the overall system.  
 >   
-> 2. **NameNode Response**: The NameNode responds with a list of block identifiers of the blocks that make up the file and the identifiers of the machines that contain each block.  
+> 6. **Datanodes**: Each datanode stores a portion of the file system's data and is responsible for storing and retrieving data blocks. They communicate with the namenode to manage their data.  
 >   
-> 3. **DataNode Response**: The client then sends a request to the DataNode that contains the requested block. The DataNode sends the block data back to the client.  
+> ### Reading from a File  
 >   
-> ### Process for Writing to a File  
+> 1. **Client Request**: A client (e.g., a Java program) requests to read a file from HDFS.  
 >   
-> 1. **Client Request**: A client program sends a request to the NameNode to write a file. The request includes the file name and the data to be written.  
+> 2. **Namenode Response**: The namenode responds with the list of block IDs that contain the file data and the set of nodes that contain replicas of each block.  
 >   
-> 2. **NameNode Response**: The NameNode creates new block identifiers and assigns each block identifier to several (typically three)
+> 3. **Client
 
 **Rubric Breakdown:**
 
@@ -200,7 +200,7 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 
 **Judge Explanation:**
 
-> The student's answer is incomplete and does not fully address the key components and processes of HDFS as described in the rubric.
+> The student's answer is incomplete and does not fully describe the HDFS architecture or the processes for reading and writing files as required by the rubric.
 
 ### BLEU Score (TokenSmith Answer vs Mock Answer)
 
@@ -208,10 +208,10 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 
 | Group | N | Mean BLEU | Std Dev |
 | --- | --- | --- | --- |
-| Overall | 11 | 0.0941 | 0.0674 |
-| Easy | 4 | 0.1361 | 0.0986 |
-| Medium | 5 | 0.0802 | 0.0262 |
-| Hard | 2 | 0.0447 | 0.0242 |
+| Overall | 11 | 0.0547 | 0.0313 |
+| Easy | 4 | 0.0586 | 0.0543 |
+| Medium | 5 | 0.0534 | 0.0135 |
+| Hard | 2 | 0.0501 | 0.0102 |
 
 ### Answer Faithfulness
 
@@ -228,9 +228,9 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 
 | Metric | Value |
 | --- | --- |
-| Mean word count | 252.8 |
-| Std dev word count | 83.0 |
-| Mean char count | 1624 |
+| Mean word count | 276.7 |
+| Std dev word count | 61.0 |
+| Mean char count | 1805 |
 
 ---
 
@@ -241,7 +241,7 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 | Mode | Relevance Rate |
 | --- | --- |
 | Individual (per chunk) | N/A |
-| Group (per 3 chunks) | 47.5% |
+| Group (per 3 chunks) | 54.5% |
 
 ---
 
@@ -249,7 +249,7 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 
 | Chapter | N | Gold Coverage | Rubric Met | Correctness | BLEU | Faithfulness |
 | --- | --- | --- | --- | --- | --- | --- |
-| Chapter 10 | 11 | 87.5% | 93.9% | 0.27 | 0.0941 | 1.00 |
+| Chapter 10 | 11 | 44.1% | 93.9% | 0.45 | 0.0547 | 1.00 |
 
 ---
 
@@ -269,13 +269,13 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 
 > The three key metrics often used to characterize Big Data and distinguish it from traditional relational databases are:  
 >   
-> 1. **Volume**: The amount of data to be stored and processed is much larger than traditional databases, including traditional parallel relational databases, were designed to handle.   
+> 1. **Volume**: The amount of data to be stored and processed is much larger than traditional databases, including traditional parallel relational databases, were designed to handle. Early generation parallel databases were designed to work on tens to a few hundreds of machines, whereas new applications require thousands of machines in parallel to store and process the data.  
 >   
-> 2. **Velocity**: The rate of arrival of data are much higher in today's networked world than in earlier days. Data management systems must be able to ingest and store data at very high rates, and many applications need data items to be processed as they arrive, to detect and respond quickly to certain events.  
+> 2. **Velocity**: The rate of arrival of data is much higher in today's networked world than in earlier days. Data management systems must be able to ingest and store data at very high rates. Many applications need data items to be processed as they arrive, to detect and respond quickly to certain events.   
 >   
-> 3. **Variety**: The data are characterized by their size, speed at which they are generated, and the variety of formats. This includes data that are not necessarily relational, such as semi-structured data, textual data, and graph data. The SQL query language is well suited to specifying a variety of queries on relational data, but many computations cannot be easily expressed in SQL or efficiently evaluated if represented using SQL.  
+> 3. **Variety**: The data types and formats are diverse, including semi-structured data, textual data, and graph data. Traditional relational databases and SQL are well-suited for relational data, but many computations cannot be easily expressed in SQL or efficiently evaluated if represented using SQL. Big Data applications often require processing of large volumes of text, image, and video data, which are not necessarily in relational form.  
 >   
-> <<<ANSWER>>>
+> <<<ANSWER>>
 
 **Mock Answer** *(reference)*:
 
@@ -308,11 +308,11 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 - Correctness (with ref): ✅ Fully correct
 - Rubric Met Rate: 100.0%
 - Faithfulness: ✅ Faithful
-- BLEU Score vs Mock Answer: 0.0630
+- BLEU Score vs Mock Answer: 0.0517
 
 **Judge Explanation:**
 
-> The student correctly identifies and explains the three key metrics: Volume, Velocity, and Variety, matching the reference answer.
+> The student correctly identified and explained each of the three key metrics: Volume, Velocity, and Variety, matching the reference answer.
 
 ### 🔻 Worst Answer
 
@@ -324,29 +324,29 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 
 **TokenSmith's Answer** *(full)*:
 
-> The Hadoop Distributed File System (HDFS) is a distributed file system designed to store large files across a cluster of computers. It is built on the architecture of the Google File System (GFS), which was developed in the early 2000s and widely used within Google. HDFS is now a widely used open-source implementation of a distributed file system.  
+>             The architecture of the Hadoop Distributed File System (HDFS) is designed to efficiently store large files across a large number of machines while maintaining a single-file-system view for clients. Here's a detailed breakdown of its architecture and the process for reading from and writing to a file:  
 >   
-> The core of HDFS is a server called the NameNode. All file system requests are sent to the NameNode. Here's a detailed breakdown of the architecture and the process for reading from and writing to a file:  
+> ### HDFS Architecture  
 >   
-> ### Architecture of HDFS  
+> 1. **Nodes (Machines)**: The nodes that store data blocks in HDFS are called **datanodes**. Each datanode stores a portion of the file system's data.  
 >   
-> 1. **NameNode**: This is the central server that manages the file system. It stores metadata about the files, including the list of blocks and the locations of these blocks on the DataNodes.  
+> 2. **Blocks**: Files are broken down into multiple **blocks**, typically ranging from 64 MB to 128 MB in size. Each block is assigned a unique identifier.  
 >   
-> 2. **DataNodes**: These are the worker nodes that store the actual data blocks. Each DataNode stores a portion of the file system's data and reports back to the NameNode about the blocks it stores.  
+> 3. **Metadata**: The file system metadata is partitioned across many nodes. This metadata includes information about the blocks, such as their locations on the datanodes. The metadata is stored at a single node called the **namenode**.  
 >   
-> ### Process for Reading from a File  
+> 4. **Replication**: Each file block is replicated across multiple datanodes (typically three). This replication ensures that the data remains accessible even if one or more datanodes fail.  
 >   
-> 1. **Client Request**: A client program sends a request to the NameNode to read a file. The request includes the file name (which can be a path, such as `/home/avi/book/ch10`).  
+> 5. **Namenode**: The namenode is the central management node of the HDFS. It stores the metadata and coordinates the storage of data blocks across the datanodes. The namenode is a single point of failure, and its performance can significantly impact the overall system.  
 >   
-> 2. **NameNode Response**: The NameNode responds with a list of block identifiers of the blocks that make up the file and the identifiers of the machines that contain each block.  
+> 6. **Datanodes**: Each datanode stores a portion of the file system's data and is responsible for storing and retrieving data blocks. They communicate with the namenode to manage their data.  
 >   
-> 3. **DataNode Response**: The client then sends a request to the DataNode that contains the requested block. The DataNode sends the block data back to the client.  
+> ### Reading from a File  
 >   
-> ### Process for Writing to a File  
+> 1. **Client Request**: A client (e.g., a Java program) requests to read a file from HDFS.  
 >   
-> 1. **Client Request**: A client program sends a request to the NameNode to write a file. The request includes the file name and the data to be written.  
+> 2. **Namenode Response**: The namenode responds with the list of block IDs that contain the file data and the set of nodes that contain replicas of each block.  
 >   
-> 2. **NameNode Response**: The NameNode creates new block identifiers and assigns each block identifier to several (typically three)
+> 3. **Client
 
 **Mock Answer** *(reference)*:
 
@@ -355,43 +355,43 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 **Rubric Breakdown:**
 
 - ✅ `MET` — Must identify the key components: NameNode and DataNodes.
-  - *The answer identifies the key components: NameNode and DataNodes.*
+  - *The answer correctly identifies the key components: NameNode and DataNodes.*
 - ✅ `MET` — Must explain that files are broken into replicated blocks stored on DataNodes.
   - *The answer explains that files are broken into replicated blocks stored on DataNodes.*
 - ✅ `MET` — Must describe the read process: client contacts NameNode for block locations, then contacts DataNodes for data.
-  - *The answer describes the read process: client contacts NameNode for block locations, then contacts DataNodes for data.*
+  - *The answer describes the read process accurately: client contacts NameNode for block locations, then contacts DataNodes for data.*
 - ✅ `MET` — Must describe the write process: client contacts NameNode for block allocation, then sends data to DataNodes.
-  - *The answer describes the write process: client contacts NameNode for block allocation, then sends data to DataNodes.*
+  - *The answer describes the write process accurately: client contacts NameNode for block allocation, then sends data to DataNodes.*
 
 **Gold Chunk Retrieval Breakdown:**
 
-- ✅ `RETRIEVED` (found in rank 7)
+- ❌ `MISSED`
   - `The core of HDFS is a server running a machine referred to as the NameNode .`
-- ✅ `RETRIEVED` (found in rank 7)
+- ❌ `MISSED`
   - `The machines that store data blocks in HDFS are called DataNodes .`
-- ✅ `RETRIEVED` (found in rank 3)
+- ✅ `RETRIEVED` (found in rank 5)
   - `Files are broken up into multiple blocks.`
-- ✅ `RETRIEVED` (found in rank 3)
+- ✅ `RETRIEVED` (found in rank 1)
   - `Further, each file block is replicated across multiple (typically three) machines, so that a machine failure does not result in the file becoming inaccessible.`
-- ✅ `RETRIEVED` (found in rank 7)
+- ❌ `MISSED`
   - `For a file read request, the HDFS server sends back a list of block identifiers of the blocks in the file and the identifiers of the machines that contain each block.`
-- ✅ `RETRIEVED` (found in rank 7)
+- ❌ `MISSED`
   - `Each block is then fetched from one of the machines that store a copy of the block.`
-- ✅ `RETRIEVED` (found in rank 7)
+- ❌ `MISSED`
   - `For a file write, the HDFS server creates new block identifiers and assigns each block identifier to several (usually three) machines, and returns the block identifiers and machine assignment to the client.`
-- ✅ `RETRIEVED` (found in rank 2)
+- ✅ `RETRIEVED` (found in rank 3)
   - `The client then sends the block identifiers and block data to the assigned machines, which store the data.`
 
 **Key Metrics:**
-- Gold Chunk Coverage: 100.0%
+- Gold Chunk Coverage: 37.5%
 - Correctness (with ref): ❌ Incorrect
 - Rubric Met Rate: 100.0%
 - Faithfulness: ✅ Faithful
-- BLEU Score vs Mock Answer: 0.1065
+- BLEU Score vs Mock Answer: 0.0473
 
 **Judge Explanation:**
 
-> The student's answer is incomplete and does not fully address the key components and processes of HDFS as described in the rubric.
+> The student's answer is incomplete and does not fully describe the HDFS architecture or the processes for reading and writing files as required by the rubric.
 
 ### 🔍 Retrieval Examples
 
@@ -402,7 +402,7 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 **Question:** What is a key-value storage system, and what are its two core primitive functions?
 
 **Gold chunks needed (2):**
-- ✅ `A key-value storage system (or key-value store ) is a system that provides a way to store or update a record (value) with an associated key and to retrieve the record with a given key.` (rank 2)
+- ✅ `A key-value storage system (or key-value store ) is a system that provides a way to store or update a record (value) with an associated key and to retrieve the record with a given key.` (rank 3)
 - ✅ `Key-value storage systems are, at their core, based on two primitive functions, put(key, value) , used to store values with an associated key, and get(key) , used to retrieve the stored value associated with the specified key.` (rank 1)
 
 **Coverage:** 100.0%
@@ -413,19 +413,18 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 
 #### ❌ Worst Retrieval — gold chunks missed
 
-**Question:** How do key-value stores, also known as NoSQL systems, typically differ from traditional relational database systems in terms of features and capabilities?
+**Question:** What does the term "sharding" refer to, and what are some common attributes used as partitioning keys?
 
-**Gold chunks needed (4):**
-- ❌ `However, they are not fullfledged database systems; they are sometimes called NoSQL systems, since such storage systems typically do not support the SQL language.`
-- ✅ `Key-value stores typically do not support declarative querying (using SQL or any other declarative query language) and do not support transactions (which, as we shall see in Chapter 17, allow multiple updates to be committed atomically to ensure that the database state remains consistent despite failures, and control concurrent access to data to ensure that problems do not arise due to concurrent access by multiple transactions).` (rank 1)
-- ❌ `Key-value stores also typically do not support retrieval of records based on selections on non-key attributes, although some document stores do support such retrieval.`
-- ✅ `An important reason for not supporting such features is that some of them are not easy to support on very large clusters; thus, most systems sacrifice these features in order to achieve scalability.` (rank 1)
+**Gold chunks needed (3):**
+- ❌ `The term sharding refers to the partitioning of data across multiple databases or machines.`
+- ❌ `Partitioning is usually done on one or more attributes, referred to as partitioning attributes, partitioning keys, or shard keys.`
+- ❌ `User or account identifiers are commonly used as partitioning keys.`
 
-**Coverage:** 50.0%
+**Coverage:** 0.0%
 
 **First retrieved chunk:**
 
-> . Note that key-value stores are not full-fledged databases, since they do not provide many of the features that are viewed as standard on database systems today. Key-value stores typically do not support declarative querying (using SQL or any other declarative query language) and do not support transactions (which, as we shall see in Chapter 17, allow multiple updates to be committed atomically to ensure that the database state remains consistent despite failures, and control concurrent access to data to ensure that problems do not arise due to concurrent access by multiple transactions). Keyvalue stores also typically do not support retrieval of records based on selections on non-key attributes, although some document stores do support such retrieval. An important reason for not supporting such features is that some of them are not easy to support on very large clusters; thus, most systems sacrifice these features in order to achieve scalability. Applications that need scalability may be willing to sacrifice these features in exchange for scalability. Key-value stores are also called NoSQL systems, to emphasize that they do not support SQL, and the lack of support for SQL was initially viewed as something positive, rather than a limitation. However, it soon became clear that lack of database features such as transaction support and support for SQL, make application development more complicated. Thus, many key-value stores have evolved to support features, such as the SQL language and transactions.  ``` show dbs // Shows available databases use sampledb // Use database sampledb, creating it if it does not exist db.createCollection("student") // Create a collection db.createCollection("instructor") show collections // Shows all collections in the database db.student.insert({ "id" : "00128", "name" : "Zhang", "dept name" : "Comp
+> . Considering the preceding example, if the virtual node corresponding to a range of timestamps 2017-01-01 to MaxDate were to become overfull, the partition could be split into two partitions. For example, if half the tuples in this range have timestamps less than 2018-01-01, one partition would have timestamps from 2017-01-01 to less than 2018-01-01, and the other would have tuples with timestamps from 2018-01-01 to MaxDate . To rebalance the number of tuples in a real node, we would just need to move one of the virtual nodes to a new real node. Dynamic repartitioning in this way is very widely used in parallel databases and parallel data storage systems today. In data storage systems, the term table refers to a collection of data items. Tables are partitioned into multiple tablets . The number of tablets into which a table is divided is much larger than the number of real nodes in the system; thus tablets correspond to virtual nodes. The system needs to maintain a partition table , which provides a mapping from the partitioning key ranges to a tablet identifier, as well as the real node on which the tablet data reside. Figure 21.3 shows an example of a partition table, where the partition key is a date. Tablet0 stores records with key value &lt; 2012-01-01. Tablet1 stores records with key values ≥ 2012-01-01, but &lt; 2013-01-01. Tablet2 stores records with key values ≥ 2013-01-01, but &lt; 2014-01-01, and so on. Finally, Tablet6 stores values ≥ 2017-01-01. Read requests must specify a value for the partitioning attribute, which is used to identify the tablet which could contain a record with that key value; a request that does not specify a value for the partitioning attribute would have to be sent to all tablets. A read request is processed by using the partitioning key value v to identify the tablet whose range of keys contains v , and then sending the request to the real node where the tablet resides
 
 ### ✅ Faithful Answer Example
 
@@ -437,17 +436,17 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 
 > The three key metrics often used to characterize Big Data and distinguish it from traditional relational databases are:  
 >   
-> 1. **Volume**: The amount of data to be stored and processed is much larger than traditional databases, including traditional parallel relational databases, were designed to handle.   
+> 1. **Volume**: The amount of data to be stored and processed is much larger than traditional databases, including traditional parallel relational databases, were designed to handle. Early generation parallel databases were designed to work on tens to a few hundreds of machines, whereas new applications require thousands of machines in parallel to store and process the data.  
 >   
-> 2. **Velocity**: The rate of arrival of data are much higher in today's networked world than in earlier days. Data management systems must be able to ingest and store data at very high rates, and many applications need data items to be processed as they arrive, to detect and respond quickly to certain events.  
+> 2. **Velocity**: The rate of arrival of data is much higher in today's networked world than in earlier days. Data management systems must be able to ingest and store data at very high rates. Many applications need data items to be processed as they arrive, to detect and respond quickly to certain events.   
 >   
-> 3. **Variety**: The data are characterized by their size, speed at which they are generated, and the variety of formats. This includes data that are not necessarily relational, such as semi-structured data, textual data, and graph data. The SQL query language is well suited to specifying a variety of queries on relational data, but many computations cannot be easily expressed in SQL or efficiently evaluated if represented using SQL.  
+> 3. **Variety**: The data types and formats are diverse, including semi-structured data, textual data, and graph data. Traditional relational databases and SQL are well-suited for relational data, but many computations cannot be easily expressed in SQL or efficiently evaluated if represented using SQL. Big Data applications often require processing of large volumes of text, image, and video data, which are not necessarily in relational form.  
 >   
-> <<<ANSWER>>>
+> <<<ANSWER>>
 
 **Judge Explanation:**
 
-> All claims in the answer can be directly traced back to information provided in the retrieved text chunks.
+> All factual claims in the answer can be directly traced back to information provided in the retrieved text chunks.
 
 ### ✅ Rubric Pass Example
 
@@ -461,13 +460,13 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 
 > The three key metrics often used to characterize Big Data and distinguish it from traditional relational databases are:  
 >   
-> 1. **Volume**: The amount of data to be stored and processed is much larger than traditional databases, including traditional parallel relational databases, were designed to handle.   
+> 1. **Volume**: The amount of data to be stored and processed is much larger than traditional databases, including traditional parallel relational databases, were designed to handle. Early generation parallel databases were designed to work on tens to a few hundreds of machines, whereas new applications require thousands of machines in parallel to store and process the data.  
 >   
-> 2. **Velocity**: The rate of arrival of data are much higher in today's networked world than in earlier days. Data management systems must be able to ingest and store data at very high rates, and many applications need data items to be processed as they arrive, to detect and respond quickly to certain events.  
+> 2. **Velocity**: The rate of arrival of data is much higher in today's networked world than in earlier days. Data management systems must be able to ingest and store data at very high rates. Many applications need data items to be processed as they arrive, to detect and respond quickly to certain events.   
 >   
-> 3. **Variety**: The data are characterized by their size, speed at which they are generated, and the variety of formats. This includes data that are not necessarily relational, such as semi-structured data, textual data, and graph data. The SQL query language is well suited to specifying a variety of queries on relational data, but many computations cannot be easily expressed in SQL or efficiently evaluated if represented using SQL.  
+> 3. **Variety**: The data types and formats are diverse, including semi-structured data, textual data, and graph data. Traditional relational databases and SQL are well-suited for relational data, but many computations cannot be easily expressed in SQL or efficiently evaluated if represented using SQL. Big Data applications often require processing of large volumes of text, image, and video data, which are not necessarily in relational form.  
 >   
-> <<<ANSWER>>>
+> <<<ANSWER>>
 
 **Mock Answer** *(reference)*:
 
@@ -500,77 +499,73 @@ Rubric met rate: **100.0%** | Correctness: **❌ Incorrect**
 - Correctness (with ref): ✅ Fully correct
 - Rubric Met Rate: 100.0%
 - Faithfulness: ✅ Faithful
-- BLEU Score vs Mock Answer: 0.0630
+- BLEU Score vs Mock Answer: 0.0517
 
 **Judge Explanation:**
 
-> The student correctly identifies and explains the three key metrics: Volume, Velocity, and Variety, matching the reference answer.
+> The student correctly identified and explained each of the three key metrics: Volume, Velocity, and Variety, matching the reference answer.
 
 ### ❌ Rubric Fail Example
 
-**Chapter 10 | Difficulty: HARD | Record: `c10_w715_739_q008`**
+**Chapter 10 | Difficulty: EASY | Record: `c10_w715_739_q003`**
 
 **Question:**
 
-> A web company needs to analyze terabytes of daily web server logs to understand user behavior. Why would a framework like MapReduce be more suitable for this task than a traditional SQL-based parallel relational database?
+> What is the role of the NameNode in the Hadoop Distributed File System (HDFS) architecture?
 
 **TokenSmith's Answer** *(full)*:
 
->             A web company analyzing terabytes of daily web server logs would likely find a framework like MapReduce more suitable for several reasons compared to a traditional SQL-based parallel relational database:  
+> In the Hadoop Distributed File System (HDFS) architecture, the NameNode plays a crucial role as the central management node. Here are the key responsibilities of the NameNode:  
 >   
-> 1. **Volume of Data**: Traditional SQL-based relational databases are designed to handle structured data within manageable volumes. Terabytes of raw log data, which includes user activity, page views, and timestamps, far exceed the capacity of traditional databases. MapReduce, on the other hand, is designed to handle very large volumes of data, making it more suitable for this scale.  
+> 1. **Metadata Management**: The NameNode stores and manages all metadata for the HDFS, including the list of blocks that make up each file, the locations of these blocks on the DataNodes, and the replication information for each block.  
 >   
-> 2. **Processing Speed**: MapReduce allows for parallel processing of data across multiple machines, which is crucial for handling the high volume of data generated daily. Traditional SQL databases typically process data sequentially, which can be very slow when dealing with large datasets.  
+> 2. **Client Requests**: When a client wants to read or write a file, it sends requests to the NameNode. The NameNode responds with the necessary metadata to locate the blocks and the DataNodes that contain them.  
 >   
-> 3. **Data Variety**: Web server logs are often in unstructured or semi-structured formats (e.g., text files). SQL is well-suited for structured data, but it struggles with the variety of formats found in web logs. MapReduce can handle a wide variety of data formats, including text, semi-structured data, and even graph data.  
+> 3. **Replication Control**: The NameNode decides which DataNodes should store replicas of each block. It ensures that the required number of replicas are maintained to ensure high availability and fault tolerance.  
 >   
-> 4. **Scalability**: MapReduce is designed to scale horizontally, meaning it can easily add more machines to the cluster to handle larger datasets. Traditional SQL databases are more limited in their scalability, often requiring significant changes to the database architecture or even a new database system to handle larger volumes of data.  
+> 4. **File System State**: The NameNode maintains the current state of the file system, including the current file system layout, block locations, and replication status.  
 >   
-> 5. **Real-time Processing**: Many web analytics tasks require real-time or near-real-time processing. MapReduce can be configured to process data in a streaming fashion, allowing for immediate analysis and response to user behavior. Traditional SQL databases are not designed for real-time processing and may require additional tools or techniques to achieve this.  
+> 5. **Failover**: In a high-availability setup, the NameNode can perform failover to another NameNode if the current one fails. This ensures that the file system remains operational even if the NameNode goes down.  
 >   
-> 6. **Efficiency in Data Access**: MapReduce allows for efficient data access and manipulation through the use of map and reduce functions, which can be tailored to specific analytical tasks. This is more cumbersome and less efficient when
+> 6. **Configuration and Parameters**: The NameNode also stores and manages configuration parameters for the HDFS, such as block size, replication factor, and other system parameters.  
+>   
+> In summary, the NameNode acts as the brain of the HDFS, managing all metadata and coordinating with DataNodes to ensure that the file system remains operational and efficient.
 
 **Mock Answer** *(reference)*:
 
-> A framework like MapReduce is more suitable for analyzing massive web server logs for three main reasons. First, web logs are typically semi-structured or textual data stored in files, which do not fit the rigid relational model required by SQL databases. Second, the complex analysis required often cannot be easily expressed in SQL, whereas MapReduce allows the use of arbitrary program code in its…
+> In the HDFS architecture, the NameNode is a central server that manages the file system. All file system requests are sent to the NameNode. Its primary role is to maintain the file system's metadata, which includes a list of block identifiers for each file and, for each block, the identifiers of the DataNode machines that store copies of that block.
 
 **Rubric Breakdown:**
 
-- ✅ `MET` — Must mention that web logs are typically non-relational (textual/semi-structured), making them a poor fit for SQL databases.
-  - *The answer mentions that web logs are typically non-relational (textual/semi-structured), making them a poor fit for SQL databases.*
-- ❌ `NOT_MET` — Must state that MapReduce allows arbitrary program code, which is more flexible than SQL for complex analysis on such data.
-  - *The answer does not explicitly state that MapReduce allows arbitrary program code, which is more flexible than SQL for complex analysis on such data.*
-- ❌ `NOT_MET` — Must contrast the fault-tolerance models, explaining that MapReduce is more resilient to failures on large clusters because it can avoid full query restarts, unlike traditional parallel databases.
-  - *The answer does not contrast the fault-tolerance models, explaining that MapReduce is more resilient to failures on large clusters because it can avoid full query restarts, unlike traditional parallel databases.*
+- ✅ `MET` — Must identify the NameNode as the central server that receives all file system requests.
+  - *The answer correctly identifies the NameNode as the central server that receives all file system requests.*
+- ❌ `NOT_MET` — Must state that the NameNode stores the mapping from a file to its constituent block identifiers.
+  - *The answer does not explicitly state that the NameNode stores the mapping from a file to its constituent block identifiers.*
+- ❌ `NOT_MET` — Must state that the NameNode also tracks the locations (DataNodes) of the replicas for each block.
+  - *The answer does not explicitly state that the NameNode tracks the locations (DataNodes) of the replicas for each block.*
 
 **Gold Chunk Retrieval Breakdown:**
 
-- ✅ `RETRIEVED` (found in rank 8)
-  - `The data consumed by many such applications are stored in multiple files.`
-- ✅ `RETRIEVED` (found in rank 8)
-  - `Since the data are not necessarily relational, a system designed for querying such data must support arbitrary program code, not just relational algebra or SQL queries.`
-- ✅ `RETRIEVED` (found in rank 8)
-  - `It should be clear that the SQL constructs we have seen earlier are not suited for carrying out such tasks, since the input data are not in relational form, and the output too may not be in relational form.`
-- ❌ `MISSED`
-  - `The MapReduce paradigm models a common situation in parallel processing, where some processing, identified by the map() function, is applied to each of a large number of input records, and then some form of aggregation, identified by the reduce() function, is applied to the result of the map() function.`
-- ✅ `RETRIEVED` (found in rank 4)
-  - `If such database systems are run on clusters with thousands of machines, the probability of failure during execution of a query increases significantly for queries that process a large amount of data and consequently run for a long time.`
-- ✅ `RETRIEVED` (found in rank 4)
-  - `Restarting a query in the event of a failure is no longer an option, since there is a fairly high probability that a failure will happen yet again while the query is executing.`
-- ✅ `RETRIEVED` (found in rank 4)
-  - `Techniques to avoid complete restart, allowing only computation on the failed machines to be redone, were developed in the context of map-reduce systems, which we study in Section 10.3.`
+- ✅ `RETRIEVED` (found in rank 3)
+  - `The core of HDFS is a server running a machine referred to as the NameNode .`
+- ✅ `RETRIEVED` (found in rank 3)
+  - `All file system requests are sent to the NameNode.`
+- ✅ `RETRIEVED` (found in rank 3)
+  - `The NameNode stores a list of block identifiers of the blocks in each file; for each block identifier, the NameNode also stores the identifiers of machines that store copies of that block.`
+- ✅ `RETRIEVED` (found in rank 3)
+  - `The machines that store data blocks in HDFS are called DataNodes .`
 
 **Key Metrics:**
-- Gold Chunk Coverage: 85.7%
-- Correctness (with ref): ⚠️ Partially correct
+- Gold Chunk Coverage: 100.0%
+- Correctness (with ref): ✅ Fully correct
 - Rubric Met Rate: 33.3%
 - Faithfulness: ✅ Faithful
-- BLEU Score vs Mock Answer: 0.0276
+- BLEU Score vs Mock Answer: 0.0128
 
 **Judge Explanation:**
 
-> The student answer addresses some key points but misses or gets others wrong, particularly in explaining the flexibility of MapReduce for complex analysis and the fault-tolerance model.
+> The student answer accurately addresses all key rubric points, correctly identifying the NameNode as the central server for file system requests and detailing its roles in metadata management, replication control, and failover.
 
 ---
 
-*Report generated by TokenSmith Benchmark Evaluator on 2026-06-03 10:46:25*
+*Report generated by TokenSmith Benchmark Evaluator on 2026-06-09 10:47:42*

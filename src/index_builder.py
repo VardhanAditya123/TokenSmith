@@ -19,6 +19,8 @@ from src.embedder import SentenceTransformer
 
 from src.preprocessing.chunking import DocumentChunker, ChunkConfig, print_chunk_stats
 from src.preprocessing.extraction import extract_sections_from_markdown
+from src.config import RAGConfig
+
 
 # ----- runtime parallelism knobs (avoid oversubscription) -----
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -29,7 +31,8 @@ os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
 DEFAULT_EXCLUSION_KEYWORDS = ['questions', 'exercises', 'summary', 'references']
-
+config_path = pathlib.Path("config/config.yaml")
+cfg = RAGConfig.from_yaml(config_path)
 
 def build_index(
     markdown_file: str,
@@ -184,7 +187,7 @@ def build_index(
     dim = embeddings.shape[1]
     if len(all_chunks) >= 1:
         print(f"🔨 Building cluster index for {len(all_chunks):,} chunks...")
-        cluster_data = build_cluster_index(embeddings, all_chunks, dim)
+        cluster_data = build_cluster_index(embeddings, all_chunks, dim,cfg.n_clusters)
         cluster_path = artifacts_dir / f"{index_prefix}_clusters.pkl"
         with open(cluster_path, "wb") as f:
             pickle.dump(cluster_data, f)
@@ -257,6 +260,8 @@ def build_cluster_index(embeddings: np.ndarray, chunks: List[str], embedding_dim
         
     n_chunks = len(chunks)
     actual_clusters = max(5, min(n_clusters, n_chunks // 10))
+    actual_clusters = n_clusters
+    
     print(f"  Computing k-means with {actual_clusters} clusters...")
     
     # Run k-means clustering
