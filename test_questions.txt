@@ -1,0 +1,6 @@
+Desribe how isolation is enforced when two transactions interleave operations
+Describe how transactions that failed in the middle are being handled.
+Describe how interleave operations work with an example?
+Describe how interleave transactions work with an example?
+How does a database enforce ACID properties?
+Difference between ACID and BASE properties.

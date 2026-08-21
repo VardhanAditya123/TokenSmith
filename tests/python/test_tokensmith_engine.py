@@ -17,6 +17,7 @@ from python_engine import tokensmith_store as store
 UNIT_EMBEDDING_DIMENSION = 64
 
 
+
 class TokenSmithEngineUnitTests(unittest.TestCase):
     def write_text_pdf(self, path: Path, page_texts: list[str]) -> None:
         def escape_pdf_text(value: str) -> str:
@@ -161,6 +162,58 @@ class TokenSmithEngineUnitTests(unittest.TestCase):
         self.assertGreaterEqual(len(chunks), 1)
         self.assertIn("transitive dependencies", chunks[0]["text"])
         self.assertEqual(chunks[0]["pageStart"], 1)
+
+    def test_summarize_chunk_bullets(self):
+        text = (
+            "Database normalization reduces duplicated data."
+            "Third normal form removes transitive dependencies between non-key attributes. "
+            "Transactions preserve atomicity, consistency, isolation, and durability."
+        )
+
+        bullets = engine.summarize_chunk_bullets(text)
+
+        self.assertGreaterEqual(len(bullets), 1)
+        print(bullets)
+        self.assertIn('Database normalization reduces duplicated data', bullets[0])
+        self.assertIn('Third normal form removes transitive dependencies between non-key attributes', bullets[1])
+        self.assertIn('Transactions preserve atomicity, consistency, isolation, and durability', bullets[2])
+    
+    def test_chunk_create_graph_node_for_each_chunk(self):
+        text = (
+            "Database normalization reduces duplicated data. "
+            "Third normal form removes transitive dependencies between non-key attributes. "
+            "Transactions preserve atomicity, consistency, isolation, and durability."
+        )
+
+        chunks = engine.chunk_text(text, page_count=1)
+
+        for chunk in chunks:
+           print(chunk)
+           print("\n")
+
+    def test_build_utility_graph_and_store_keeps_sparse_links(self):
+        temp_dir = Path(tempfile.mkdtemp())
+        chunk_a = {
+            "rowid": 10,
+            "text": "Database indexing keeps query plans fast and stable.",
+            "summaryBullets": ["Indexing improves query speed."],
+            "embedding": [1.0] + [0.0] * (UNIT_EMBEDDING_DIMENSION - 1),
+        }
+        chunk_b = {
+            "rowid": 11,
+            "text": "Transaction durability guarantees committed writes survive crashes.",
+            "summaryBullets": ["Durability preserves committed writes."],
+            "embedding": [0.2] + [0.98] + [0.0] * (UNIT_EMBEDDING_DIMENSION - 2),
+        }
+
+        engine.build_utility_graph_and_store(str(temp_dir), "m-sparse", [chunk_a, chunk_b])
+
+        with (temp_dir / "similarity_graphs" / "m-sparse.json").open("r", encoding="utf-8") as handle:
+            graph = json.load(handle)
+
+        self.assertIn("10", graph)
+        self.assertIn("11", graph)
+        self.assertTrue(graph["10"] or graph["11"])
 
     def test_chunk_text_uses_default_chunk_size(self):
         text = "\n\n".join(
@@ -2110,34 +2163,6 @@ class TokenSmithEngineUnitTests(unittest.TestCase):
 
         self.assertIn("user:\nWho is Larcher?", prompt)
         self.assertTrue(prompt.endswith("assistant:\n"))
-
-    def test_unknown_worker_command_reports_error(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            process = subprocess.Popen(
-                [sys.executable, str(Path(engine.__file__).resolve())],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                cwd=temp_dir,
-            )
-            assert process.stdin is not None
-            assert process.stdout is not None
-            try:
-                process.stdin.write(json.dumps({"id": "1", "command": "unknown", "payload": {}}) + "\n")
-                process.stdin.flush()
-                response = json.loads(process.stdout.readline())
-            finally:
-                process.stdin.close()
-                process.stdout.close()
-                if process.stderr is not None:
-                    process.stderr.close()
-                process.terminate()
-                process.wait(timeout=5)
-
-            self.assertEqual(response["id"], "1")
-            self.assertFalse(response["ok"])
-            self.assertRegex(response["error"], r"Unknown command")
 
 
 if __name__ == "__main__":

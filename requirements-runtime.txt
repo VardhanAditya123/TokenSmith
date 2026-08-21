@@ -3,3 +3,6 @@ jinja2
 numpy
 Pillow>=10
 pypdfium2>=4.30
+matplotlib
+networkx
+bokeh>=3.0.0

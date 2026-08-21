@@ -580,7 +580,7 @@ def insert_chunk(conn: sqlite3.Connection, document_id: int, chunk: Dict[str, An
             chunk.get("documentTitle"),
             None,
             None,
-            None,
+            json.dumps(chunk.get("summaryBullets") or [], ensure_ascii=False),
             chunk.get("pageStart"),
             chunk.get("lineFrom"),
             chunk.get("lineTo"),
@@ -944,6 +944,7 @@ def source_row_select() -> str:
             ch.id AS chunk_index,
             ch.chunk_size AS chunk_size,
             ch.section_header AS section_header,
+            ch.keywords AS summary_bullets,
             col.embedding_model AS embedding_model,
             pt.thumbnail_path AS thumbnail_path
         FROM chunks ch
@@ -954,6 +955,49 @@ def source_row_select() -> str:
         JOIN tokensmith_collection_state s ON s.collection_id = col.id
         LEFT JOIN pdf_page_thumbnails pt ON pt.document_id = d.id AND pt.page = ch.page
     """
+
+
+def get_chunks_by_material_id(
+    user_data_path: str,
+    material_id: Any,
+) -> List[Dict[str, Any]]:
+    """Fetch all chunks for a material with their database rowids and embeddings."""
+    init_db(user_data_path)
+    
+    # Convert material_id to integer if it's already an int or can be converted
+    try:
+        col_id = int(material_id)
+    except (ValueError, TypeError):
+        # If it's a string like "material-xxx", try to look it up
+        col_id = collection_id_from_material_id(material_id)
+    
+    if col_id is None or col_id <= 0:
+        return []
+    
+    with connect(user_data_path) as conn:
+        rows = conn.execute(
+            f"""
+            {source_row_select()}
+            WHERE col.id = ?
+              AND s.status = 'ready'
+            """,
+            (col_id,),
+        ).fetchall()
+    
+    result = []
+    for row in rows:
+        chunk_dict = dict(row)
+        # Fetch embedding if it exists
+        with connect(user_data_path) as conn:
+            embedding_row = conn.execute(
+                "SELECT embedding FROM embeddings WHERE chunk_id = ? LIMIT 1",
+                (chunk_dict.get("rowid"),),
+            ).fetchone()
+        if embedding_row and embedding_row["embedding"]:
+            chunk_dict["embedding"] = blob_to_vector(embedding_row["embedding"])
+        result.append(chunk_dict)
+    
+    return result
 
 
 def get_chunks_by_rowids(
