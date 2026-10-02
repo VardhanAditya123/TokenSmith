@@ -2,7 +2,7 @@
 
 | Scope | Covered / total lines | Coverage |
 | --- | ---: | ---: |
-| Frontend / Electron (TypeScript / TSX) | 4401/16208 | 27.2% |
+| Frontend / Electron (TypeScript / TSX) | 4415/16226 | 27.2% |
 | Backend (Python) | 2154/2605 | 82.7% |
 
 Includes untested files in `src/` and `python_engine/`; excludes TypeScript declaration files.
@@ -24,7 +24,7 @@ This measures unit-test execution, not answer accuracy or full end-to-end covera
 | `src/main/engine/engine-service.ts` | 0/177 | 0.0% |
 | `src/main/engine/ollama-library-search.ts` | 211/223 | 94.6% |
 | `src/main/engine/ollama-service.ts` | 441/1085 | 40.6% |
-| `src/main/engine/question-rewrite.ts` | 74/74 | 100.0% |
+| `src/main/engine/question-rewrite.ts` | 88/92 | 95.7% |
 | `src/main/engine/remote-chat-parameters.ts` | 9/9 | 100.0% |
 | `src/main/engine/remote-chat-service.ts` | 304/359 | 84.7% |
 | `src/main/engine/remote-generator-network.ts` | 6/7 | 85.7% |
@@ -91,6 +91,6 @@ This measures unit-test execution, not answer accuracy or full end-to-end covera
 
 </details>
 
-Measured commit: 740edf1493226dc8bc08fe69a920216ee20deec5
+Measured commit: 10df6433a06bde4fcbaa2977fb1767c82e8139d2
 
-[CI run](https://github.com/VardhanAditya123/TokenSmith/actions/runs/36964233636)
+[CI run](https://github.com/VardhanAditya123/TokenSmith/actions/runs/36966564700)
